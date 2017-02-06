@@ -1,4 +1,5 @@
 const PIXI = require('pixi.js')
+const CharMenu = require('./char_menu.js')
 
 class Character {
   constructor(conf) {
@@ -30,25 +31,28 @@ class Character {
         this.char.buttonMode = true
         this.char.defaultCursor = 'pointer'
 
+        this.menu = new CharMenu(this)
+
         this.engine.stage.addChild(this.char)
 
         this.engine.ticker.add(this.update.bind(this))
 
-        this.engine.view.onclick = () => {
-          this.move(10, 10)
-        }
+        this.char.on('click', () => {
+          this.menu.toggle()
+        })
       })
   }
 
   moveTo(x, y, dur) {
     dur = dur || 1000
     let path = new PIXI.tween.TweenPath()
+        tween = PIXI.tweenManager.createTween(this.char)
+
     path.moveTo(this.char.x, this.char.y)
       .arcTo(this.char.x, this.char.y, x, y, 50)
 
-    let tween = PIXI.tweenManager.createTween(this.char)
     tween.path = path
-    tween.time = dur || 1000
+    tween.time = dur
     tween.easing = PIXI.tween.Easing.outBounce()
     tween.start()
 
