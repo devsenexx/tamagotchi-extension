@@ -2,6 +2,9 @@ const PIXI = require('pixi.js')
 const CharMenu = require('./char_menu.js')
 const CONSTS = require('../utils/extension.js')
 
+WALK_THRESH = 100
+WALK_MAX_WALL_DISTANCE = 200
+
 class Character {
   constructor(conf) {
     if (!conf.engine) {
@@ -16,13 +19,13 @@ class Character {
   create() {
     PIXI.loader.add(this.conf.name, this.conf.sprites[0])
       .load((loader, res) => {
-        console.debug("Creating character:", this.conf)
+        this.sprites = this.conf.sprites.map((i) => {
+          return PIXI.Texture.fromImage(i)
+        })
 
-        this.sprites = this.conf.sprites.map((i) => { return PIXI.Texture.fromImage(i) })
         this.spriteIdx = 0
 
         this.char = new PIXI.Sprite(this.sprites[0])
-
         this.char.width = 200
         this.char.height = 132
         this.char.x = (this.engine.renderer.width / 2)
@@ -47,7 +50,7 @@ class Character {
   moveTo(x, y, dur) {
     dur = dur || 1000
     let path = new PIXI.tween.TweenPath()
-        tween = PIXI.tweenManager.createTween(this.char)
+    tween = PIXI.tweenManager.createTween(this.char)
 
     path.moveTo(this.char.x, this.char.y)
       .arcTo(this.char.x, this.char.y, x, y, 50)
@@ -87,6 +90,8 @@ class Character {
       this.reversed = false
     }
 
+    this.walkAround()
+
     PIXI.tweenManager.update()
   }
 
@@ -104,13 +109,30 @@ class Character {
     this.bubble.y = this.char.y
     this.engine.stage.addChild(this.bubble)
 
-    let txt = new PIXI.Text(text, { fill: 0x333333, fontSize: 60, align: 'center', fontFamily: 'Press Start 2P' })
+    let txt = new PIXI.Text(text, {
+      fill: 0x333333,
+      fontSize: 60,
+      align: 'center',
+      fontFamily: 'Courier New'
+    })
     txt.setTransform(-80, -180)
     this.bubble.addChild(txt)
 
     this.bubbleTimeout = setTimeout(() => {
       this.bubble.destroy()
     }, timeout)
+  }
+
+  walkAround() {
+    if (!this.walkDest) {
+      this.walkDest = this.char.x + (Math.floor(Math.random() * WALK_THRESH * 2) - WALK_THRESH)
+    }
+
+    if (this.char.x == this.walkDest || this.char.x < WALK_MAX_WALL_DISTANCE || this.char.x > this.engine.width - WALK_MAX_WALL_DISTANCE) {
+      this.walkDest = null
+    } else {
+      this.char.x += this.char.x > this.walkDest ? -1 : 1
+    }
   }
 }
 

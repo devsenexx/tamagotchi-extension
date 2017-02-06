@@ -1,15 +1,29 @@
+const CONSTS = require('../utils/extension.js')
+
 class CharMenu {
   constructor(target) {
     this.target = target
     this.buttons = []
   }
 
-  redrawMenuItems() {
+  redrawMenuItems(drop = true) {
+    if (this.menuTimeout) {
+      clearTimeout(this.menuTimeout)
+    }
+
     this.buttons = []
-    this.buttons.push(this.drawMenuItem('Bed', -150, 50))
-    this.buttons.push(this.drawMenuItem('Feed', -150, -50, () => { this.target.speak('Yum!') }))
-    this.buttons.push(this.drawMenuItem('Play', -160, 0))
-    this.buttons.push(this.drawMenuItem('Leave', 160, 0))
+    this.buttons.push(this.drawMenuItem('me-go-sleep', -150, 30))
+    this.buttons.push(this.drawMenuItem('feed-me', -150, -90, () => {
+      this.target.speak('Yum!')
+    }))
+    this.buttons.push(this.drawMenuItem('im-bored', -160, -30))
+    this.buttons.push(this.drawMenuItem('kishta', 80, -30))
+
+    if (drop) {
+      this.menuTimeout = setTimeout(() => {
+        this.clearMenuItems()
+      }, 6000)
+    }
   }
 
   clearMenuItems() {
@@ -19,32 +33,28 @@ class CharMenu {
     this.buttons = []
   }
 
-  drawMenuItem(text, x, y, click) {
-    let btn = new PIXI.Graphics(),
-      txt  = new PIXI.Text(text, { fill: 0x333333, fontSize: 22, align: 'center', fontFamily: 'Press Start 2P' }),
+  drawMenuItem(icon, x, y, click) {
+    let btn = new PIXI.Sprite.fromImage(CONSTS.ICON_URLS[icon]),
       btnX = this.target.char.x + x,
       btnY = this.target.char.y + y
-
-    btn
-      .beginFill(0x9DAAB1, 0.9)
-      .drawCircle(btnX - 3, btnY - 3, 32)
-      .endFill()
-      .beginFill(0xCCE5E8, 0.9)
-      .drawCircle(btnX, btnY, 32)
-      .endFill()
 
     btn.interactive = true
     btn.buttonMode = true
     btn.defaultCursor = 'pointer'
+    btn.x = btnX
+    btn.y = btnY
 
-    txt.setTransform(btnX - 25, btnY - 13)
-
-    btn.addChild(txt)
     this.target.engine.stage.addChild(btn)
 
     if (click) {
       btn.on('click', click.bind(this))
     }
+
+    this.target.engine.ticker.add(() => {
+      if (btn && btn.transform) {
+        btn.x = this.target.char.x + x
+      }
+    })
 
     return btn
   }
