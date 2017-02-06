@@ -47,7 +47,7 @@ class Feed {
 
           //send notification to server
           let action = new Action()
-              action.addAction("food",action.getUserName(),action.getPictureSrc())
+              action.addAction("feed",action.getUserName(),action.getPictureSrc())
         })
 
         if (!KeyStorage.get('food-tween')) {
