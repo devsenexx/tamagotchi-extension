@@ -7,11 +7,12 @@ class Character {
     }
     this.engine = conf.engine
     this.conf = conf
-    this.createCharacter()
+    this.create()
+    this.engine.view.id = 'tg-renderer'
     document.body.appendChild(this.engine.view)
   }
 
-  createCharacter () {
+  create () {
     PIXI.loader.add(this.conf.name, this.conf.asset)
       .load((loader, res) => {
         console.debug("Creating character:", this.conf)
@@ -32,6 +33,15 @@ class Character {
         })
       })
   }
+
+  // move (newX, newY) {
+  //   view = this.engine.view
+  //   oldX = view.x
+  //   oldY = view.y
+  //   while (oldX != newX && oldY != newY) {
+  //
+  //   }
+  // }
 }
 
 module.exports = Character
