@@ -4,7 +4,7 @@ module.exports = {
   ICON_URLS: (function () {
     mapped = Object.create(null);
     ['me-go-sleep', 'feed-me', 'im-bored', 'kishta'].forEach((i) => {
-      mapped[i] = chrome.extension.getURL('assets/img/menu/' + i + '.png')
+      mapped[i] = chrome.extension.getURL(`assets/img/menu/${i}.png`)
     })
     return mapped
   })(),
@@ -17,7 +17,7 @@ module.exports = {
 
     for (enemy in counts) {
       mapped[enemy] = [...Array(counts[enemy]).keys()].map((i) => {
-        return chrome.extension.getURL('assets/img/sprites/' + enemy + '-Idle_' + i + '.png')
+        return chrome.extension.getURL(`assets/img/sprites/${enemy}-Idle_${i}.png`)
       })
     }
     return mapped

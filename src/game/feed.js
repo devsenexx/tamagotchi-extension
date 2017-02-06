@@ -10,6 +10,8 @@ class Feed {
     this.scatter = scatter
     this.foods = []
     this.walkDest = []
+    this.spriteIdx = []
+    this.sprites = []
     this.drawFoods()
   }
 
@@ -22,23 +24,23 @@ class Feed {
       this.foods = []
     }
 
-    let i = 1
     Object.keys(FOODS)
-      .forEach((foodName) => {
-        let sprites = FOODS[foodName]
-        let food = new PIXI.Sprite.fromImage(sprites[0])
+      .forEach((foodName, i) => {
+        this.sprites[i] = FOODS[foodName].map((s) => { return new PIXI.Texture.fromImage(s) })
+        let food = new PIXI.Sprite(this.sprites[i][0])
+        this.spriteIdx.push(0)
         food.x = this.target.engine.renderer.width - (100 * i)
         food.y = 100
         food.width = 100
-        food.height = 100
+        food.height = 73
         food.anchor.set(0.5, 0.5)
         food.interactive = true
         food.buttonMode = true
         food.defaultCursor = 'pointer'
 
-        // if (this.scatter) {
-        //   this.reversed.push([true, false][Math.round(Math.random())])
-        // }
+        // this.target.engine.ticker.add(() => {
+        //   food.texture = this.sprites[i][parseInt(++this.spriteIdx[i] % this.sprites.length)]
+        // });
 
         food.on('click', () => {
           let path = new PIXI.tween.TweenPath()
@@ -57,21 +59,16 @@ class Feed {
 
           //send notification to server
           let action = new Action()
-          action.addAction("feed", action.getUserName(), action.getPictureSrc())
+          action.addAction(this.scatter ? "game" : "feed", action.getUserName(), action.getPictureSrc())
 
-          // tween.easing = PIXI.tween.Easing.linear()
-          // let dPath = new PIXI.Graphics();
-          // dPath.lineStyle(1, 0xff0000, 1);
-          // dPath.drawPath(path);
-          // this.target.engine.stage.addChild(dPath);
           tween.start()
           this.clearTable()
           setTimeout(() => {
             let sentences = [
-              "burrrrp",
-              "That tasted funky",
-              "Aaah, that was yummy",
-              "I'm gonna be sick!"
+              "Burrrppp!",
+              "That tasted great!",
+              "Aaah, that was yummy!",
+              // "I'm gonna be sick!"
             ]
             this.target.speak(sentences[Math.floor(Math.random() * sentences.length)], 3000)
 
@@ -79,7 +76,7 @@ class Feed {
               setTimeout(() => {
                 let sentences = [
                   "That was fun!",
-                  "You're really bad at this!"
+                  "You're really good at this!"
                 ]
                 this.target.speak(sentences[Math.floor(Math.random() * sentences.length)])
               }, 3000)
@@ -96,18 +93,33 @@ class Feed {
 
         this.target.engine.stage.addChild(food)
         this.foods.push(food)
-        i++
       })
 
+    if (this.foods.length) {
+      this.target.engine.ticker.add(() => {
+        if (this.foods && this.foods.length) {
+          this.foods.forEach((food, idx) => {
+            if (food && food.texture) {
+              food.texture = this.sprites[idx][parseInt(++this.spriteIdx[idx] % this.sprites[idx].length)]
+            }
+          })
+        }
+      })
+    }
+
     if (this.scatter && this.foods.length) {
-      let messFunc = () => {
+      let messFunc = (delta) => {
         if (this.foods.length) {
+          delta = delta || 1
           this.foods.forEach((food) => {
             let path = new PIXI.tween.TweenPath(),
               x = Math.floor(Math.random() * this.target.engine.renderer.width - FOOD_WALL_THRESH) + FOOD_WALL_THRESH
 
             path.moveTo(food.x, food.y)
             path.lineTo(x, food.y)
+
+            let scaleX = x > food.x ? -1 : 1
+            food.scale.x *= scaleX
             // path.arcTo(food.x, food.y, this.target.char.x, this.target.char.y, 100)
             let tween = PIXI.tweenManager.createTween(food)
             tween.path = path
@@ -115,7 +127,9 @@ class Feed {
             tween.expire = true
             // tween.easing = PIXI.tween.Easing.inOutElastic()
             tween.easing = PIXI.tween.Easing.linear()
-            tween.start()
+            setTimeout(() => {
+              tween.start()
+            }, 100)
           })
         }
       }
