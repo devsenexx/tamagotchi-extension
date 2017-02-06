@@ -7,6 +7,20 @@ module.exports = {
     })
     return mapped
   })(),
+  FOOD_URLS: (function() {
+    mapped = Object.create(null)
+    counts = {
+      enemy13: 12,
+      enemy4: 8,
+    }
+
+    for (enemy in counts) {
+      mapped[enemy] = [...Array(counts[enemy]).keys()].map((i) => {
+        return chrome.extension.getURL('assets/img/sprites/' + enemy + '-Idle_' + i + '.png')
+      })
+    }
+    return mapped
+  })(),
   backAndPostToken: {
     method: 'POST',
     headers: {
