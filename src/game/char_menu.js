@@ -7,7 +7,7 @@ class CharMenu {
   redrawMenuItems() {
     this.buttons = []
     this.buttons.push(this.drawMenuItem('Bed', -150, 50))
-    this.buttons.push(this.drawMenuItem('Feed', -150, -50))
+    this.buttons.push(this.drawMenuItem('Feed', -150, -50, () => { this.target.speak('Yum!') }))
     this.buttons.push(this.drawMenuItem('Play', -160, 0))
     this.buttons.push(this.drawMenuItem('Leave', 160, 0))
   }
@@ -19,9 +19,9 @@ class CharMenu {
     this.buttons = []
   }
 
-  drawMenuItem(text, x, y) {
+  drawMenuItem(text, x, y, click) {
     let btn = new PIXI.Graphics(),
-      txt  = new PIXI.Text(text, { fill: 0x333333, fontSize: 22, align: 'center' }),
+      txt  = new PIXI.Text(text, { fill: 0x333333, fontSize: 22, align: 'center', fontFamily: 'Press Start 2P' }),
       btnX = this.target.char.x + x,
       btnY = this.target.char.y + y
 
@@ -41,6 +41,10 @@ class CharMenu {
 
     btn.addChild(txt)
     this.target.engine.stage.addChild(btn)
+
+    if (click) {
+      btn.on('click', click.bind(this))
+    }
 
     return btn
   }

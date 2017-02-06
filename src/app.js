@@ -8,7 +8,7 @@ let bat = new Character({
   sprites: [...Array(8)
     .keys()
   ].map((i) => {
-    return chrome.extension.getURL('assets/img/enemy6-Idle_' + i + '.png')
+    return chrome.extension.getURL('assets/img/sprites/enemy6-Idle_' + i + '.png')
   })
 })
 
