@@ -1,5 +1,6 @@
 const PIXI = require('pixi.js')
 const CharMenu = require('./char_menu.js')
+const CONSTS = require('../utils/extension.js')
 
 class Character {
   constructor(conf) {
@@ -89,39 +90,28 @@ class Character {
     PIXI.tweenManager.update()
   }
 
-  // moveTo(newX, newY, duration = 1000) {
-  //   this.engine.ticker.add(this._moveToTickerFn(newX, newY, duration))
-  // }
-  //
-  // move(byX, byY, duration = 1000) {
-  //   let pos = this.engine.view.getBoundingClientRect(),
-  //       newX = pos.left + byX,
-  //       newY = pos.top + byY
-  //
-  //   this.engine.ticker.add(this._moveToTickerFn(newX, newY, duration))
-  // }
-  //
-  // _moveToTickerFn(newX, newY, duration) {
-  //   let view = this.engine.view,
-  //       pos = view.getBoundingClientRect(),
-  //       yReverse = pos.top > newY,
-  //       xReverse = pos.left > newX,
-  //       yDistance = (newY - pos.top) / duration,
-  //       xDistance = (newX - pos.left) / duration
-  //
-  //   return (delta) => {
-  //     let t = parseInt(view.style.top),
-  //       l = parseInt(view.style.left)
-  //
-  //     view.style.top = t + yDistance / delta + 'px'
-  //     view.style.left = l + xDistance / delta + 'px'
-  //
-  //     if ((t > newY + yDistance || yReverse && t < newY + yDistance) &&
-  //       (l > newX + xDistance || xReverse && l < newX + xDistance)) {
-  //       this.engine.ticker.remove(this._moveToTickerFn)
-  //     }
-  //   }
-  // }
+  speak(text, timeout = 4000) {
+    if (this.bubbleTimeout) {
+      this.bubble.destroy()
+      clearTimeout(this.bubbleTimeout)
+    }
+
+    this.bubble = new PIXI.Sprite.fromImage(CONSTS.SPEECH_BUBBLE_URL)
+    this.bubble.anchor.set(0.5, 1)
+    this.bubble.height = 91
+    this.bubble.width = 262
+    this.bubble.x = this.char.x - 100
+    this.bubble.y = this.char.y
+    this.engine.stage.addChild(this.bubble)
+
+    let txt = new PIXI.Text(text, { fill: 0x333333, fontSize: 60, align: 'center', fontFamily: 'Press Start 2P' })
+    txt.setTransform(-80, -180)
+    this.bubble.addChild(txt)
+
+    this.bubbleTimeout = setTimeout(() => {
+      this.bubble.destroy()
+    }, timeout)
+  }
 }
 
 module.exports = Character

@@ -1,6 +1,16 @@
 const PIXI = require('pixi.js')
 require('pixi-tween') // auto added to PIXI namespace
 
+// Awesome P2 font
+fontEl = document.createElement('link')
+fontEl.href = 'https://fonts.googleapis.com/css?family=Press+Start+2P'
+fontEl.rel = 'stylesheet'
+document.head.appendChild(fontEl)
+
+fontPreloader = document.createElement('div')
+fontPreloader.style.fontFamily = 'Press Start 2P'
+document.body.appendChild(fontPreloader)
+
 let app = new PIXI.Application(
   document.body.clientWidth,
   200, {
