@@ -18,24 +18,8 @@ let bat = new Character({
 
 
 
-function getUserName() {
-  var metas = document.getElementsByTagName('META');
 
-  for (var i=0; i<metas.length; i++) {
-    if (metas[i].getAttribute("name") == "user-login") {
-      return metas[i].getAttribute("content");
-    }
-  }
 
-  return "";
-}
 
-function getPictureSrc(){
-  return document.getElementsByClassName("avatar")[0].src
-}
-
-let Action = require('./models/action.js')
-let action = new Action().addAction("food",getUserName(),getPictureSrc())
-
-console.log(getUserName())
-console.log(getPictureSrc())
+//console.log(getUserName())
+//console.log(getPictureSrc())

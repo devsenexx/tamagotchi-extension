@@ -4,7 +4,7 @@ class Action {
     addAction(actionName,userName,picSrc) {
         //API request
 
-
+        console.log("send_food")
         chrome.runtime.sendMessage({
             url: 'http://13.67.227.91:8080/action',
             args: {
@@ -26,6 +26,23 @@ class Action {
             }
         )
     };
+
+
+     getUserName() {
+        var metas = document.getElementsByTagName('META');
+
+        for (var i=0; i<metas.length; i++) {
+            if (metas[i].getAttribute("name") == "user-login") {
+                return metas[i].getAttribute("content");
+            }
+        }
+
+        return "";
+    }
+
+     getPictureSrc(){
+        return document.getElementsByClassName("avatar")[0].src
+    }
 
     constructor() {
 
