@@ -44,5 +44,10 @@ let bat = new Character({
 
 // Katoni
 
+
 let User = require('./models/user.js')
-let user = new User().getUserByEmail("eran@senexx.com")
+let user = new User("eran@senexx.com")
+
+//let Action = require('./models/action.js')
+//let action = new Action().addAction("bla",user.id)
+

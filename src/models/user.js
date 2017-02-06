@@ -9,16 +9,18 @@ class User {
         });
 
         chrome.runtime.onMessage.addListener(
-            function(request, sender, sendResponse) {
+            (request, sender, sendResponse) => {
                 if (request.data) {
                     console.log(request.data)
+                    this.id=request.data.id
                 }
             }
         )
     };
 
-    constructor() {
-
+    constructor(emailAddress) {
+        this.getUserByEmail(emailAddress)
+        this.id = 0
     };
 }
 module.exports = User
