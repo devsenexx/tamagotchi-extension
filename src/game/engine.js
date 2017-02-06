@@ -10,8 +10,8 @@ let app = new PIXI.Application(
 
 app.view.id = 'tg-renderer'
 app.view.style.position = 'absolute'
-app.view.style.top = window.screen.availWidth / 2 - 150 + 'px'
-app.view.style.left = window.screen.availHeight / 2 - 150 + 'px'
+// app.view.style.top = window.screen.availWidth / 2 - 150 + 'px'
+// app.view.style.left = window.screen.availHeight / 2 - 150 + 'px'
 app.tweens = PIXI.tweenManager
 
 document.body.appendChild(app.view)
