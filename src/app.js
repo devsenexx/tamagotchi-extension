@@ -5,7 +5,11 @@ let Character = require('./game/character.js')
 let bat = new Character({
   engine,
   name: 'bat',
-  asset: chrome.extension.getURL('assets/img/bat-stasis.png')
+  sprites: [...Array(8)
+    .keys()
+  ].map((i) => {
+    return chrome.extension.getURL('assets/img/enemy6-Idle_' + i + '.png')
+  })
 })
 
 // Hirsch
@@ -45,4 +49,5 @@ let bat = new Character({
 // Katoni
 
 let User = require('./models/user.js')
-let user = new User().getUserByEmail("eran@senexx.com")
+let user = new User()
+  .getUserByEmail("eran@senexx.com")

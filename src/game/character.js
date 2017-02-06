@@ -12,17 +12,23 @@ class Character {
   }
 
   create() {
-    PIXI.loader.add(this.conf.name, this.conf.asset)
+    PIXI.loader.add(this.conf.name, this.conf.sprites[0])
       .load((loader, res) => {
         console.debug("Creating character:", this.conf)
 
-        this.char = new PIXI.Sprite(res[this.conf.name].texture)
+        this.sprites = this.conf.sprites.map((i) => { return PIXI.Texture.fromImage(i) })
+        this.spriteIdx = 0
+
+        this.char = new PIXI.Sprite(this.sprites[0])
 
         this.char.width = 200
         this.char.height = 132
         this.char.x = (this.engine.renderer.width / 2)
         this.char.y = (this.engine.renderer.height / 2)
         this.char.anchor.set(0.5, 0.5)
+        this.char.interactive = true
+        this.char.buttonMode = true
+        this.char.defaultCursor = 'pointer'
 
         this.engine.stage.addChild(this.char)
 
@@ -63,12 +69,16 @@ class Character {
     }
   }
 
-  update() {
+  update(delta) {
+    let thresh = 0.2
+
     this.char.rotation += 0.01 * (this.reversed ? -1 : 1)
 
-    if (!this.reversed && this.char.rotation > 0.4) {
+    this.char.texture = this.sprites[parseInt(++this.spriteIdx % this.sprites.length)]
+
+    if (!this.reversed && this.char.rotation > thresh) {
       this.reversed = true
-    } else if (this.reversed && this.char.rotation < -0.4) {
+    } else if (this.reversed && this.char.rotation < -thresh) {
       this.reversed = false
     }
 
