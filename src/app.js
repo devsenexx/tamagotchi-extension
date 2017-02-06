@@ -12,12 +12,11 @@ let bat = new Character({
   })
 })
 
-let User = require('./models/user.js')
-let user = new User("eran@senexx.com")
+//let User = require('./models/user.js')
+//let user = new User("eran@senexx.com")
 
 
-//let Action = require('./models/action.js')
-//let action = new Action().addAction("bla",user.id)
+
 
 function getUserName() {
   var metas = document.getElementsByTagName('META');
@@ -34,5 +33,9 @@ function getUserName() {
 function getPictureSrc(){
   return document.getElementsByClassName("avatar")[0].src
 }
+
+let Action = require('./models/action.js')
+let action = new Action().addAction("food",getUserName(),getPictureSrc())
+
 console.log(getUserName())
 console.log(getPictureSrc())
