@@ -1,4 +1,5 @@
 const CONSTS = require('../utils/extension.js')
+let Feed = require('./feed.js');
 
 class CharMenu {
   constructor(target) {
@@ -14,7 +15,7 @@ class CharMenu {
     this.buttons = []
     this.buttons.push(this.drawMenuItem('me-go-sleep', -150, 30))
     this.buttons.push(this.drawMenuItem('feed-me', -150, -90, () => {
-      this.target.speak('Yum!')
+      new Feed(this.target)
     }))
     this.buttons.push(this.drawMenuItem('im-bored', -160, -30))
     this.buttons.push(this.drawMenuItem('kishta', 80, -30))

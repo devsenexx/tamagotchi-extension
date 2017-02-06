@@ -3,7 +3,7 @@ const CharMenu = require('./char_menu.js')
 const CONSTS = require('../utils/extension.js')
 
 WALK_THRESH = 100
-WALK_MAX_WALL_DISTANCE = 300
+WALK_MAX_WALL_DISTANCE = 200
 
 class Character {
   constructor(conf) {
@@ -17,34 +17,31 @@ class Character {
   }
 
   create() {
-    PIXI.loader.add(this.conf.name, this.conf.sprites[0])
-      .load((loader, res) => {
-        this.sprites = this.conf.sprites.map((i) => {
-          return PIXI.Texture.fromImage(i)
-        })
+    this.sprites = this.conf.sprites.map((i) => {
+      return PIXI.Texture.fromImage(i)
+    })
 
-        this.spriteIdx = 0
+    this.spriteIdx = 0
 
-        this.char = new PIXI.Sprite(this.sprites[0])
-        this.char.width = 200
-        this.char.height = 132
-        this.char.x = (this.engine.renderer.width / 2)
-        this.char.y = (this.engine.renderer.height / 2)
-        this.char.anchor.set(0.5, 0.5)
-        this.char.interactive = true
-        this.char.buttonMode = true
-        this.char.defaultCursor = 'pointer'
+    this.char = new PIXI.Sprite(this.sprites[0])
+    this.char.width = 200
+    this.char.height = 132
+    this.char.x = (this.engine.renderer.width / 2)
+    this.char.y = (this.engine.renderer.height / 2)
+    this.char.anchor.set(0.5, 0.5)
+    this.char.interactive = true
+    this.char.buttonMode = true
+    this.char.defaultCursor = 'pointer'
 
-        this.menu = new CharMenu(this)
+    this.menu = new CharMenu(this)
 
-        this.engine.stage.addChild(this.char)
+    this.engine.stage.addChild(this.char)
 
-        this.engine.ticker.add(this.update.bind(this))
+    this.engine.ticker.add(this.update.bind(this))
 
-        this.char.on('click', () => {
-          this.menu.toggle()
-        })
-      })
+    this.char.on('click', () => {
+      this.menu.toggle()
+    })
   }
 
   moveTo(x, y, dur) {
@@ -107,6 +104,12 @@ class Character {
     this.bubble.width = 262
     this.bubble.x = this.char.x - 100
     this.bubble.y = this.char.y
+    this.bubble.interactive = true
+    this.bubble.buttonMode = true
+    this.bubble.defaultCursor = 'pointer'
+    this.bubble.on('click', () => {
+      this.bubble.destroy()
+    })
     this.engine.stage.addChild(this.bubble)
 
     let txt = new PIXI.Text(text, {
@@ -130,14 +133,17 @@ class Character {
   }
 
   walkAround() {
-    if (!this.walkDest) {
-      this.walkDest = this.char.x + (Math.floor(Math.random() * WALK_THRESH * 2) - WALK_THRESH)
-    }
+    if (this.char.x == this.walkDest ||
+      this.char.x < WALK_MAX_WALL_DISTANCE ||
+      this.char.x > this.engine.renderer.width - WALK_MAX_WALL_DISTANCE) {
 
-    if (this.char.x == this.walkDest || this.char.x < WALK_MAX_WALL_DISTANCE || this.char.x > this.engine.width - WALK_MAX_WALL_DISTANCE) {
       this.walkDest = null
     } else {
       this.char.x += this.char.x > this.walkDest ? -1 : 1
+    }
+
+    if (!this.walkDest) {
+      this.walkDest = this.char.x + (Math.floor(Math.random() * WALK_THRESH * 2) - WALK_THRESH)
     }
   }
 }

@@ -27,5 +27,5 @@ app.tweens = PIXI.tweenManager
 
 document.body.appendChild(app.view)
 
-window.__TG = app
+window.__TG = { app }
 module.exports = app
