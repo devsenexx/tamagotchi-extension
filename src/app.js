@@ -1,5 +1,6 @@
 let engine = require('./game/engine.js')
 let Character = require('./game/character.js')
+let Action = require('./models/action.js')
 
 // TODO: move this to centralized file with other assets
 let bat = new Character({
@@ -24,20 +25,9 @@ chrome.runtime.onMessage.addListener(
             }
         } = request || {}
 
-        if (user_id && user_id != getUserName()) {
+        if (user_id && user_id != new Action().getUserName()) {
             console.log("Received feed action", request.data)
             bat.feed(pic, user_id)
         }
     }
 )
-
-
-function getPictureSrc() {
-  try {
-    return document.getElementsByClassName("avatar")[0].src
-  } catch (e) {
-    // console.error(e)
-  }
-}
-console.log(getUserName())
-console.log(getPictureSrc())
