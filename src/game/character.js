@@ -3,7 +3,7 @@ const CharMenu = require('./char_menu.js')
 const CONSTS = require('../utils/extension.js')
 
 WALK_THRESH = 100
-WALK_MAX_WALL_DISTANCE = 200
+WALK_MAX_WALL_DISTANCE = 300
 
 class Character {
   constructor(conf) {
@@ -117,6 +117,12 @@ class Character {
     })
     txt.setTransform(-80, -180)
     this.bubble.addChild(txt)
+
+    this.engine.ticker.add(() => {
+      if (this.bubble && this.bubble.transform) {
+        this.bubble.x = this.char.x - 100
+      }
+    })
 
     this.bubbleTimeout = setTimeout(() => {
       this.bubble.destroy()

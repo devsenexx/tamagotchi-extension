@@ -6,10 +6,12 @@
     "babel-preset-es2017": "^6.22.0",
     "babelify": "^7.3.0",
     "browserify": "^14.0.0",
+    "bufferutil": "^2.0.0",
     "mo-js": "^0.288.1",
     "pixi-tween": "^0.2.0",
     "pixi.js": "^4.3.4",
-    "pusher-client": "^1.1.0"
+    "pusher-client": "^1.1.0",
+    "utf-8-validate": "^3.0.1"
   },
   "scripts": {
     "watch": "watchify src/app.js -o dist/bundle.js -t [ babelify --presets [ es2017 ] ]",
