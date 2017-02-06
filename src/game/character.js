@@ -94,7 +94,9 @@ class Character {
 
   speak(text, timeout = 4000) {
     if (this.bubbleTimeout) {
-      this.bubble.destroy()
+        if (this.bubble) {
+            this.bubble.destroy()
+        }
       clearTimeout(this.bubbleTimeout)
     }
 
@@ -108,7 +110,9 @@ class Character {
     this.bubble.buttonMode = true
     this.bubble.defaultCursor = 'pointer'
     this.bubble.on('click', () => {
-      this.bubble.destroy()
+      if (this.bubble) {
+          this.bubble.destroy()
+      }
     })
     this.engine.stage.addChild(this.bubble)
 
@@ -128,13 +132,17 @@ class Character {
     })
 
     this.bubbleTimeout = setTimeout(() => {
-      this.bubble.destroy()
+        if (this.bubble) {
+            this.bubble.destroy()
+        }
     }, timeout)
   }
 
     feed(pic, name, timeout = 4000) {
         if (this.bubbleTimeout) {
-            this.bubble.destroy()
+            if (this.bubble) {
+                this.bubble.destroy()
+            }
             clearTimeout(this.bubbleTimeout)
         }
 
@@ -173,9 +181,15 @@ class Character {
         this.bubble.buttonMode = true
         this.bubble.defaultCursor = 'pointer'
         this.bubble.on('click', () => {
-            img.destroy()
-            txt.destroy()
-            this.bubble.destroy()
+            if (img) {
+                img.destroy()
+            }
+            if (txt) {
+                txt.destroy()
+            }
+            if (this.bubble) {
+                this.bubble.destroy()
+            }
         })
 
         this.bubble.addChild(txt)
@@ -189,7 +203,9 @@ class Character {
         })
 
         this.bubbleTimeout = setTimeout(() => {
-            this.bubble.destroy()
+            if (this.bubble) {
+                this.bubble.destroy()
+            }
         }, timeout)
     }
 
