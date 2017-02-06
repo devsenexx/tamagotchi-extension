@@ -8,7 +8,11 @@ let bat = new Character({
   asset: chrome.extension.getURL('assets/img/bat-stasis.png')
 })
 
-window.__TG = {
-  engine,
-  character: bat,
-}
+// Hirsch
+
+require("./authentication/api.min")
+const GoogleAuth = require("./authentication/google_auth")
+const google_auth = new GoogleAuth("people/me")
+
+
+// Katoni
