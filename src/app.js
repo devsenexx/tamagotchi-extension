@@ -22,7 +22,7 @@ let user = new User("eran@senexx.com")
 function getUserName() {
   var metas = document.getElementsByTagName('META');
 
-  for (var i=0; i<metas.length; i++) {
+  for (let i = 0; i < metas.length; i++) {
     if (metas[i].getAttribute("name") == "user-login") {
       return metas[i].getAttribute("content");
     }
@@ -31,8 +31,12 @@ function getUserName() {
   return "";
 }
 
-function getPictureSrc(){
-  return document.getElementsByClassName("avatar")[0].src
+function getPictureSrc() {
+  try {
+    return document.getElementsByClassName("avatar")[0].src
+  } catch (e) {
+    // console.error(e)
+  }
 }
 console.log(getUserName())
 console.log(getPictureSrc())

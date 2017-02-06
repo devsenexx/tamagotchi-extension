@@ -18,7 +18,24 @@ class CharMenu {
       new Feed(this.target)
     }))
     this.buttons.push(this.drawMenuItem('im-bored', -160, -30))
-    this.buttons.push(this.drawMenuItem('kishta', 80, -30))
+    this.buttons.push(this.drawMenuItem('kishta', 80, -30, () => {
+      let sentences = [
+        "You're a meanie!",
+        "You're not my dad!",
+        "I hate you!",
+        "You disgust me!"
+      ]
+      this.target.speak(sentences[Math.floor(Math.random() * sentences.length)])
+      this.target.engine.ticker.add(() => {
+        [this.target.char, this.target.bubble, ...this.buttons].forEach((sprite) => {
+          sprite.alpha -= 0.01
+        })
+      })
+      setTimeout(() => {
+        this.target.engine.stage.destroy()
+        this.target.engine.destroy()
+      }, 3000)
+    }))
 
     if (drop) {
       this.menuTimeout = setTimeout(() => {
@@ -28,10 +45,12 @@ class CharMenu {
   }
 
   clearMenuItems() {
-    this.buttons.forEach((btn) => {
-      btn.destroy()
-    })
-    this.buttons = []
+    if (this.buttons.length) {
+      this.buttons.forEach((btn) => {
+        btn.destroy()
+      })
+      this.buttons = []
+    }
   }
 
   drawMenuItem(icon, x, y, click) {
