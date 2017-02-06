@@ -39,9 +39,10 @@ class Feed {
           let tween = PIXI.tweenManager.createTween(food)
           tween.path = path
           tween.time = 2000
+          tween.expire = true
           tween.easing = PIXI.tween.Easing.outExpo()
           tween.start()
-          setTimeout(() => { food.destroy() }, 0)
+          setTimeout(() => { food.destroy() }, 2000)
         })
 
         if (!KeyStorage.get('food-tween')) {
