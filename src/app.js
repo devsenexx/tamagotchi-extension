@@ -5,7 +5,11 @@ let Character = require('./game/character.js')
 let bat = new Character({
   engine,
   name: 'bat',
-  asset: chrome.extension.getURL('assets/img/bat-stasis.png')
+  sprites: [...Array(8)
+    .keys()
+  ].map((i) => {
+    return chrome.extension.getURL('assets/img/enemy6-Idle_' + i + '.png')
+  })
 })
 
 // Hirsch

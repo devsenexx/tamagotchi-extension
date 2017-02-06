@@ -1,4 +1,5 @@
 const PIXI = require('pixi.js')
+const CharMenu = require('./char_menu.js')
 
 class Character {
   constructor(conf) {
@@ -8,53 +9,84 @@ class Character {
     this.engine = conf.engine
     this.conf = conf
     this.create()
+    this.reversed = false
   }
 
   create() {
-    PIXI.loader.add(this.conf.name, this.conf.asset)
+    PIXI.loader.add(this.conf.name, this.conf.sprites[0])
       .load((loader, res) => {
         console.debug("Creating character:", this.conf)
 
-        this.char = new PIXI.Sprite(res[this.conf.name].texture)
+        this.sprites = this.conf.sprites.map((i) => { return PIXI.Texture.fromImage(i) })
+        this.spriteIdx = 0
 
-        this.char.x = this.engine.renderer.width / 2
-        this.char.y = this.engine.renderer.height / 2
+        this.char = new PIXI.Sprite(this.sprites[0])
+
         this.char.width = 200
         this.char.height = 132
+        this.char.x = (this.engine.renderer.width / 2)
+        this.char.y = (this.engine.renderer.height / 2)
         this.char.anchor.set(0.5, 0.5)
+        this.char.interactive = true
+        this.char.buttonMode = true
+        this.char.defaultCursor = 'pointer'
+
+        this.menu = new CharMenu(this)
 
         this.engine.stage.addChild(this.char)
 
-        this.engine.ticker.add(() => {
-          this.char.rotation += 0.01
-          PIXI.tweenManager.update()
-        })
+        this.engine.ticker.add(this.update.bind(this))
 
-        this.engine.view.onclick = () => {
-          this.moveTo(10, 10)
-        }
+        this.char.on('click', () => {
+          this.menu.toggle()
+        })
       })
   }
 
   moveTo(x, y, dur) {
     dur = dur || 1000
     let path = new PIXI.tween.TweenPath()
-    path.moveTo(this.char.x, this.char.y)
-      .arcTo(this.char.x + 100, this.char.y + 100, x, y, 1000)
+        tween = PIXI.tweenManager.createTween(this.char)
 
-    let tween = PIXI.tweenManager.createTween(this.char)
+    path.moveTo(this.char.x, this.char.y)
+      .arcTo(this.char.x, this.char.y, x, y, 50)
+
     tween.path = path
     tween.time = dur
     tween.easing = PIXI.tween.Easing.outBounce()
     tween.start()
-    
-    // let grph = new PIXI.Graphics()
-    // grph.lineStyle(1, 0xff0000, 1)
-    // grph.drawPath(path)
-    // this.engine.stage.addChild(grph)
-    //
-    // this.engine.ticker.add((delta) => {
-    // })
+
+    let grph = new PIXI.Graphics()
+    grph.lineStyle(1, 0xff0000, 1)
+    grph.drawPath(path)
+    this.engine.stage.addChild(grph)
+  }
+
+  move(x, y, dur) {
+    this.moveTo(this.char.x + x, this.char.y + y, dur)
+  }
+
+  pos() {
+    return {
+      x: this.char.x,
+      y: this.char.y,
+    }
+  }
+
+  update(delta) {
+    let thresh = 0.2
+
+    this.char.rotation += 0.01 * (this.reversed ? -1 : 1)
+
+    this.char.texture = this.sprites[parseInt(++this.spriteIdx % this.sprites.length)]
+
+    if (!this.reversed && this.char.rotation > thresh) {
+      this.reversed = true
+    } else if (this.reversed && this.char.rotation < -thresh) {
+      this.reversed = false
+    }
+
+    PIXI.tweenManager.update()
   }
 
   // moveTo(newX, newY, duration = 1000) {
