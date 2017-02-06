@@ -1,6 +1,9 @@
 {
   "manifest_version": 2,
   "name": "GICI Tamagotchi",
-  "version": "0.5"
+  "version": "0.5",
+  "scripts": [
+    "dist/bundle.js"
+  ]
 
 }

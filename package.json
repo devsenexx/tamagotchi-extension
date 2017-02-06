@@ -1,11 +1,12 @@
 {
   "name": "tamagotchi-extension",
-  "version": 0.5,
+  "version": "0.1.1",
   "devDependencies": {
     "babelify": "^7.3.0",
-    "browserify": "^14.0.0"
+    "browserify": "^14.0.0",
+    "babel-preset-es2015": "^6.22.0"
   },
   "scripts": {
-    "start": "browserify main.js -o bundle.js -t [ babelify --presets [ es2015 ] ]"
+    "start": "browserify src/app.js -o dist/bundle.js -t [ babelify --presets [ es2015 ] ]"
   }
 }
