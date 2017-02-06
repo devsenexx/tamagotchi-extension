@@ -25,6 +25,11 @@ var pusher = new Pusher('c1cd6b4a6f1f795b00ec', {
 });
 
 var channel = pusher.subscribe('my-channel');
-channel.bind('my-event', function (data) {
-    console.log(data.message);
+channel.bind('feed', function (json) {
+    console.log("Got message", json)
+    chrome.tabs.query({}, function(tabs) {
+        tabs.forEach(function(tab) {
+            chrome.tabs.sendMessage(tab.id, {data: json})
+        });
+    });
 });

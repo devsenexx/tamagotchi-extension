@@ -15,6 +15,14 @@ let bat = new Character({
 //let User = require('./models/user.js')
 //let user = new User("eran@senexx.com")
 
+chrome.runtime.onMessage.addListener(
+    (request, sender, sendResponse) => {
+        if (request.data && request.data.name == "feed") {
+            alert("fed")
+            console.log(request.data)
+        }
+    }
+)
 
 
 
