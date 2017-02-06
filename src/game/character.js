@@ -18,7 +18,17 @@ class Character {
 
   speak(text, timeout = 4000) {
 
-    this.bubble = this.drawBubble(text, timeout)
+    this.bubble = this.drawBubble(timeout)
+
+      let txt = new PIXI.Text(text, {
+          fill: 0x333333,
+          fontSize: 30,
+          align: 'center',
+          fontFamily: 'Courier New'
+      })
+      txt.setTransform(-110, 30)
+      this.bubble.addChild(txt)
+
   }
 
   create() {
@@ -97,22 +107,20 @@ class Character {
     PIXI.tweenManager.update()
   }
 
-  drawBubble(text, timeout) {
+  drawBubble(timeout) {
       console.log("Creating bubble", this.conf, " x ", this.char.x, " y ", this.char.y)
 
-      let txt = new PIXI.Text(text, {
-          fill: 0x333333,
-          fontSize: 30,
-          align: 'center',
-          fontFamily: 'Courier New'
-      })
-      txt.setTransform(-110, 30)
+      if (this.bubbleTimeout) {
+          if (this.bubble) {
+              this.bubble.destroy()
+          }
+          clearTimeout(this.bubbleTimeout)
+      }
 
       const bubble = new PIXI.Graphics()
       bubble.beginFill(0xFFFFFF, 1)
       bubble.lineStyle(5, 0x111111, 1)
       bubble.drawEllipse(70, 50, 200, 40)
-      bubble.addChild(txt)
       bubble.endFill()
 
       bubble.interactive = true
@@ -144,17 +152,12 @@ class Character {
   }
 
     feed(pic, name, timeout = 4000) {
-        if (this.bubbleTimeout) {
-            if (this.bubble) {
-                this.bubble.destroy()
-            }
-            clearTimeout(this.bubbleTimeout)
-        }
+        this.bubble = this.drawBubble(timeout)
 
         const img = new PIXI.Sprite.fromImage(pic)
         img.anchor.set(0.5, 1)
-        img.height = 91
-        img.width = 91
+        img.height = 50
+        img.width = 50
         img.x = this.char.x - 100
         img.y = this.char.y
         img.interactive = true
@@ -169,50 +172,17 @@ class Character {
         const text = texts[Math.floor(Math.random() * texts.length)]
         let txt = new PIXI.Text(text, {
             fill: 0x333333,
-            fontSize: 60,
+            fontSize: 30,
             align: 'center',
             fontFamily: 'Courier New'
         })
 
-        txt.setTransform(-80, -180)
-
-        this.bubble = new PIXI.Sprite.fromImage(CONSTS.SPEECH_BUBBLE_URL)
-        this.bubble.anchor.set(0.5, 1)
-        this.bubble.height = 91
-        this.bubble.width = 262
-        this.bubble.x = this.char.x - 100
-        this.bubble.y = this.char.y
-        this.bubble.interactive = true
-        this.bubble.buttonMode = true
-        this.bubble.defaultCursor = 'pointer'
-        this.bubble.on('click', () => {
-            if (img) {
-                img.destroy()
-            }
-            if (txt) {
-                txt.destroy()
-            }
-            if (this.bubble) {
-                this.bubble.destroy()
-            }
-            clearTimeout(this.bubbleTimeout)
-        })
+        img.setTransform(-60, 70)
+        txt.setTransform(-20, 30)
 
         this.bubble.addChild(txt)
         this.bubble.addChild(img)
-        this.engine.stage.addChild(this.bubble)
 
-        this.engine.ticker.add(() => {
-            if (this.bubble && this.bubble.transform) {
-                this.bubble.x = this.char.x - 100
-            }
-        })
-
-        this.bubbleTimeout = setTimeout(() => {
-            if (this.bubble) {
-                this.bubble.destroy()
-            }
-        }, timeout)
     }
 
   walkAround() {
