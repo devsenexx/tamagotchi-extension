@@ -47,7 +47,16 @@ let bat = new Character({
 
 
 // Katoni
+let Pusher = require('pusher-client');
+let pusher = new Pusher('c1cd6b4a6f1f795b00ec',{
+  encrypted: true
+});
+Pusher.logToConsole = true;
 
+let channel = pusher.subscribe('my-channel');
+channel.bind('my-event', function(data) {
+  console.log(data.message);
+});
 
 let User = require('./models/user.js')
 let user = new User("eran@senexx.com")
