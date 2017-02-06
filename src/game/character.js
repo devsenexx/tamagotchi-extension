@@ -21,19 +21,40 @@ class Character {
         this.char.y = this.engine.renderer.height / 2
         this.char.width = 200
         this.char.height = 132
-        this.char.anchor.x = 0.5
-        this.char.anchor.y = 0.5
+        this.char.anchor.set(0.5, 0.5)
 
         this.engine.stage.addChild(this.char)
 
         this.engine.ticker.add(() => {
           this.char.rotation += 0.01
+          PIXI.tweenManager.update()
         })
 
         this.engine.view.onclick = () => {
-          this.move(10, 10)
+          this.moveTo(10, 10)
         }
       })
+  }
+
+  moveTo(x, y, dur) {
+    dur = dur || 1000
+    let path = new PIXI.tween.TweenPath()
+    path.moveTo(this.char.x, this.char.y)
+      .arcTo(this.char.x + 100, this.char.y + 100, x, y, 1000)
+
+    let tween = PIXI.tweenManager.createTween(this.char)
+    tween.path = path
+    tween.time = dur
+    tween.easing = PIXI.tween.Easing.outBounce()
+    tween.start()
+    
+    // let grph = new PIXI.Graphics()
+    // grph.lineStyle(1, 0xff0000, 1)
+    // grph.drawPath(path)
+    // this.engine.stage.addChild(grph)
+    //
+    // this.engine.ticker.add((delta) => {
+    // })
   }
 
   // moveTo(newX, newY, duration = 1000) {
