@@ -3,9 +3,10 @@
   "name": "GICI Tamagotchi",
   "version": "0.5",
   "content_scripts": [{
-    "matches": ["https://github.com/*"],
+    "matches": ["https://github.com/*", "http://meyerweb.com/eric/tools/dencoder/"],
     "js": [
       "dist/bundle.js"
     ]
-  }]
+  }],
+  "web_accessible_resources": ["assets/*"]
 }
