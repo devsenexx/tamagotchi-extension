@@ -9,6 +9,7 @@ class Feed {
     this.target = target
     this.scatter = scatter
     this.foods = []
+    this.walkDest = []
     this.drawFoods()
   }
 
@@ -27,13 +28,17 @@ class Feed {
         let sprites = FOODS[foodName]
         let food = new PIXI.Sprite.fromImage(sprites[0])
         food.x = this.target.engine.renderer.width - (100 * i)
-        food.y = 50
+        food.y = 100
         food.width = 100
         food.height = 100
         food.anchor.set(0.5, 0.5)
         food.interactive = true
         food.buttonMode = true
         food.defaultCursor = 'pointer'
+
+        // if (this.scatter) {
+        //   this.reversed.push([true, false][Math.round(Math.random())])
+        // }
 
         food.on('click', () => {
           let path = new PIXI.tween.TweenPath()
@@ -46,18 +51,13 @@ class Feed {
           tween.expire = true
           tween.easing = PIXI.tween.Easing.outExpo()
           tween.start()
-          setTimeout(() => { food.destroy() }, 2000)
-
-          if (this.scatter) {
-            food.reversed = [true, false][Math.round(Math.random())]
-            food.interval = setInterval(() => {
-              food.reversed = !food.reversed
-            }, 3000)
-          }
+          setTimeout(() => {
+            food.destroy()
+          }, 2000)
 
           //send notification to server
           let action = new Action()
-          action.addAction("feed",action.getUserName(),action.getPictureSrc())
+          action.addAction("feed", action.getUserName(), action.getPictureSrc())
 
           // tween.easing = PIXI.tween.Easing.linear()
           // let dPath = new PIXI.Graphics();
@@ -73,7 +73,17 @@ class Feed {
               "Aaah, that was yummy",
               "I'm gonna be sick!"
             ]
-            this.target.speak(sentences[Math.floor(Math.random() * sentences.length)])
+            this.target.speak(sentences[Math.floor(Math.random() * sentences.length)], 3000)
+
+            if (this.scatter) {
+              setTimeout(() => {
+                let sentences = [
+                  "That was fun!",
+                  "You're really bad at this!"
+                ]
+                this.target.speak(sentences[Math.floor(Math.random() * sentences.length)])
+              }, 3000)
+            }
           })
 
           if (!KeyStorage.get('food-tween')) {
@@ -90,14 +100,27 @@ class Feed {
       })
 
     if (this.scatter && this.foods.length) {
-      this.target.engine.ticker.add(() => {
-        this.foods.forEach((food) => {
-          let amt = Math.floor(Math.random() * 100)
-          if (food.x < this.target.engine.renderer.width - FOOD_WALL_THRESH && food.x > FOOD_WALL_THRESH) {
-            food.x += food.reversed ? amt * -1 : amt
-          }
-        })
-      })
+      let messFunc = () => {
+        if (this.foods.length) {
+          this.foods.forEach((food) => {
+            let path = new PIXI.tween.TweenPath(),
+              x = Math.floor(Math.random() * this.target.engine.renderer.width - FOOD_WALL_THRESH) + FOOD_WALL_THRESH
+
+            path.moveTo(food.x, food.y)
+            path.lineTo(x, food.y)
+            // path.arcTo(food.x, food.y, this.target.char.x, this.target.char.y, 100)
+            let tween = PIXI.tweenManager.createTween(food)
+            tween.path = path
+            tween.time = 1200
+            tween.expire = true
+            // tween.easing = PIXI.tween.Easing.inOutElastic()
+            tween.easing = PIXI.tween.Easing.linear()
+            tween.start()
+          })
+        }
+      }
+      setInterval(messFunc.bind(this), 1300)
+      messFunc()
     }
   }
 
@@ -107,8 +130,8 @@ class Feed {
         this.target.engine.ticker.add(() => {
           i.alpha -= 0.01
           if (i.alpha == 0) {
-            if (i.interval) {
-              cancelInterval(i.interval)
+            if (this.foodInterval) {
+              cancelInterval(this.foodInterval)
             }
             i.destroy()
           }

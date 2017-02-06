@@ -211,8 +211,8 @@ class Character {
 
   walkAround() {
     if (this.char.x == this.walkDest ||
-      this.char.x < WALK_MAX_WALL_DISTANCE ||
-      this.char.x > this.engine.renderer.width - WALK_MAX_WALL_DISTANCE) {
+      this.char.x <= WALK_MAX_WALL_DISTANCE ||
+      this.char.x >= this.engine.renderer.width - WALK_MAX_WALL_DISTANCE) {
 
       this.walkDest = null
     } else {
