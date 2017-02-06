@@ -1,0 +1,21 @@
+{
+  "name": "tamagotchi-extension",
+  "version": "0.1.1",
+  "dependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-preset-es2017": "^6.22.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.0.0",
+    "pixi.js": "^4.3.4",
+    "babelify": "^7.3.0"
+  },
+  "scripts": {
+    "watch": "watchify src/app.js -o dist/bundle.js -t [ babelify --presets [ es2017 ] ]",
+    "build": "browserify src/app.js -t [ babelify --presets [ es2017 ] ] | uglifyjs > dist/bundle.min.js"
+  },
+  "devDependencies": {
+    "browserify": "^14.0.0",
+    "uglify-js": "^2.7.5",
+    "watchify": "^3.9.0"
+  }
+}
