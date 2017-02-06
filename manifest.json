@@ -3,8 +3,8 @@
   "name": "GICI Tamagotchi",
   "version": "0.5",
   "background": {
-    "pages": "background.html",
     "scripts": [
+      "src/pusher.min.js",
       "src/background.js"
     ]
   },

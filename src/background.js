@@ -16,3 +16,15 @@ chrome.runtime.onMessage.addListener(
         }
     }
 )
+
+// Enable pusher logging - don't include this in production
+Pusher.logToConsole = true;
+
+var pusher = new Pusher('c1cd6b4a6f1f795b00ec', {
+    encrypted: true
+});
+
+var channel = pusher.subscribe('my-channel');
+channel.bind('my-event', function (data) {
+    console.log(data.message);
+});
