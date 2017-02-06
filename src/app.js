@@ -44,18 +44,5 @@ let bat = new Character({
 
 // Katoni
 
-chrome.runtime.sendMessage({
-    url: 'https://api.backand.com/1/query/data/getUserNameByChromeId?parameters=%7B%22chromeIdInput%22:%22222%22%7D',
-    args: {
-        method: 'POST',
-        headers: {"AnonymousToken": "40e85296-b312-4a8f-b9c7-a69f5fa9eb51"},
-    }
-});
-
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        if (request.data) {
-            console.log(request.data)
-        }
-    }
-)
+let User = require('./models/user.js')
+let user = new User().getUserByEmail("eran@senexx.com")
