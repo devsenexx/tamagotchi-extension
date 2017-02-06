@@ -2,10 +2,12 @@ const FOODS = require('../utils/extension.js')
   .FOOD_URLS;
 let KeyStorage = require('../utils/key_storage.js')
 let Action = require('../models/action.js')
+const FOOD_WALL_THRESH = 100
 
 class Feed {
-  constructor(target) {
+  constructor(target, scatter = false) {
     this.target = target
+    this.scatter = scatter
     this.foods = []
     this.drawFoods()
   }
@@ -46,6 +48,13 @@ class Feed {
           tween.start()
           setTimeout(() => { food.destroy() }, 2000)
 
+          if (this.scatter) {
+            food.reversed = [true, false][Math.round(Math.random())]
+            food.interval = setInterval(() => {
+              food.reversed = !food.reversed
+            }, 3000)
+          }
+
           //send notification to server
           let action = new Action()
           action.addAction("feed",action.getUserName(),action.getPictureSrc())
@@ -79,6 +88,17 @@ class Feed {
         this.foods.push(food)
         i++
       })
+
+    if (this.scatter && this.foods.length) {
+      this.target.engine.ticker.add(() => {
+        this.foods.forEach((food) => {
+          let amt = Math.floor(Math.random() * 100)
+          if (food.x < this.target.engine.renderer.width - FOOD_WALL_THRESH && food.x > FOOD_WALL_THRESH) {
+            food.x += food.reversed ? amt * -1 : amt
+          }
+        })
+      })
+    }
   }
 
   clearTable() {
@@ -87,6 +107,9 @@ class Feed {
         this.target.engine.ticker.add(() => {
           i.alpha -= 0.01
           if (i.alpha == 0) {
+            if (i.interval) {
+              cancelInterval(i.interval)
+            }
             i.destroy()
           }
         })

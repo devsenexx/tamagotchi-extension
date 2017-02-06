@@ -13,11 +13,28 @@ class CharMenu {
     }
 
     this.buttons = []
-    this.buttons.push(this.drawMenuItem('me-go-sleep', -150, 30))
+    this.buttons.push(this.drawMenuItem('me-go-sleep', -150, 30, () => {
+      this.target.speak("ZZzzzz...")
+      setTimeout(() => {
+        this.target.engine.ticker.add(() => {
+          [this.target.char, this.target.bubble, ...this.buttons].forEach((sprite) => {
+            sprite.alpha -= 0.01
+          })
+        })
+        setTimeout(() => {
+          this.target.engine.stage.destroy()
+          this.target.engine.destroy()
+        }, 3000)
+      }, 2000)
+    }))
+
     this.buttons.push(this.drawMenuItem('feed-me', -150, -90, () => {
       new Feed(this.target)
     }))
-    this.buttons.push(this.drawMenuItem('im-bored', -160, -30))
+
+    this.buttons.push(this.drawMenuItem('im-bored', -160, -30, () => {
+      new Feed(this.target, true)
+    }))
     this.buttons.push(this.drawMenuItem('kishta', 80, -30, () => {
       let sentences = [
         "You're a meanie!",
@@ -47,7 +64,9 @@ class CharMenu {
   clearMenuItems() {
     if (this.buttons.length) {
       this.buttons.forEach((btn) => {
-        btn.destroy()
+        if (btn) {
+          btn.destroy()
+        }
       })
       this.buttons = []
     }
