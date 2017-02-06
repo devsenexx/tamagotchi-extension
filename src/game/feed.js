@@ -1,6 +1,7 @@
 const FOODS = require('../utils/extension.js')
   .FOOD_URLS;
 let KeyStorage = require('../utils/key_storage.js')
+let Action = require('../models/action.js')
 
 class Feed {
   constructor(target) {
@@ -42,6 +43,12 @@ class Feed {
           tween.time = 1000
           tween.expire = true
           tween.easing = PIXI.tween.Easing.outExpo()
+          tween.start()
+          setTimeout(() => { food.destroy() }, 2000)
+
+          //send notification to server
+          let action = new Action()
+          action.addAction("feed",action.getUserName(),action.getPictureSrc())
 
           // tween.easing = PIXI.tween.Easing.linear()
           // let dPath = new PIXI.Graphics();

@@ -12,15 +12,20 @@ let bat = new Character({
   })
 })
 
-let User = require('./models/user.js')
-let user = new User("eran@senexx.com")
+//let User = require('./models/user.js')
+//let user = new User("eran@senexx.com")
+
+chrome.runtime.onMessage.addListener(
+    (request, sender, sendResponse) => {
+        if (request.data && request.data.name == "feed") {
+            alert("fed")
+            console.log(request.data)
+        }
+    }
+)
 
 
-//let Action = require('./models/action.js')
-//let action = new Action().addAction("bla",user.id)
 
-function getUserName() {
-  var metas = document.getElementsByTagName('META');
 
   for (let i = 0; i < metas.length; i++) {
     if (metas[i].getAttribute("name") == "user-login") {
@@ -28,8 +33,6 @@ function getUserName() {
     }
   }
 
-  return "";
-}
 
 function getPictureSrc() {
   try {

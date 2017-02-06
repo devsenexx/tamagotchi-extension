@@ -1,22 +1,22 @@
 backAndPostToken = require('./../utils/extension.js').backAndPostToken
 
 class Action {
-    addAction(actionName,userId) {
+    addAction(actionName,userName,picSrc) {
         //API request
 
-        console.log(userId)
-        //chrome.runtime.sendMessage({
-        //    url: 'https://api.backand.com/1/objects/actions',
-        //    args: {
-        //        method: 'POST',
-        //        headers: {"AnonymousToken": "40e85296-b312-4a8f-b9c7-a69f5fa9eb51"},
-        //        body: JSON.stringify({
-        //            name: "eat",
-        //            user: 1,
-        //            date: new Date()
-        //        })
-        //    }
-        //});
+        console.log("send_food")
+        chrome.runtime.sendMessage({
+            url: 'http://13.67.227.91:8080/action',
+            args: {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: actionName,
+                    user_id: userName,
+                    pic: picSrc
+                }),
+                contentType: 'application/json'
+            }
+        });
 
         chrome.runtime.onMessage.addListener(
             function(request, sender, sendResponse) {
@@ -26,6 +26,23 @@ class Action {
             }
         )
     };
+
+
+     getUserName() {
+        var metas = document.getElementsByTagName('META');
+
+        for (var i=0; i<metas.length; i++) {
+            if (metas[i].getAttribute("name") == "user-login") {
+                return metas[i].getAttribute("content");
+            }
+        }
+
+        return "";
+    }
+
+     getPictureSrc(){
+        return document.getElementsByClassName("avatar")[0].src
+    }
 
     constructor() {
 
