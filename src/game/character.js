@@ -1,18 +1,16 @@
-let PIXI = require('pixi.js')
+const PIXI = require('pixi.js')
 
 class Character {
-  constructor (conf) {
+  constructor(conf) {
     if (!conf.engine) {
       throw new Error('Engine must be specified in character config')
     }
     this.engine = conf.engine
     this.conf = conf
     this.create()
-    this.engine.view.id = 'tg-renderer'
-    document.body.appendChild(this.engine.view)
   }
 
-  create () {
+  create() {
     PIXI.loader.add(this.conf.name, this.conf.asset)
       .load((loader, res) => {
         console.debug("Creating character:", this.conf)
@@ -31,15 +29,44 @@ class Character {
         this.engine.ticker.add(() => {
           this.char.rotation += 0.01
         })
+
+        this.engine.view.onclick = () => {
+          this.move(10, 10)
+        }
       })
   }
 
-  // move (newX, newY) {
-  //   view = this.engine.view
-  //   oldX = view.x
-  //   oldY = view.y
-  //   while (oldX != newX && oldY != newY) {
+  // moveTo(newX, newY, duration = 1000) {
+  //   this.engine.ticker.add(this._moveToTickerFn(newX, newY, duration))
+  // }
   //
+  // move(byX, byY, duration = 1000) {
+  //   let pos = this.engine.view.getBoundingClientRect(),
+  //       newX = pos.left + byX,
+  //       newY = pos.top + byY
+  //
+  //   this.engine.ticker.add(this._moveToTickerFn(newX, newY, duration))
+  // }
+  //
+  // _moveToTickerFn(newX, newY, duration) {
+  //   let view = this.engine.view,
+  //       pos = view.getBoundingClientRect(),
+  //       yReverse = pos.top > newY,
+  //       xReverse = pos.left > newX,
+  //       yDistance = (newY - pos.top) / duration,
+  //       xDistance = (newX - pos.left) / duration
+  //
+  //   return (delta) => {
+  //     let t = parseInt(view.style.top),
+  //       l = parseInt(view.style.left)
+  //
+  //     view.style.top = t + yDistance / delta + 'px'
+  //     view.style.left = l + xDistance / delta + 'px'
+  //
+  //     if ((t > newY + yDistance || yReverse && t < newY + yDistance) &&
+  //       (l > newX + xDistance || xReverse && l < newX + xDistance)) {
+  //       this.engine.ticker.remove(this._moveToTickerFn)
+  //     }
   //   }
   // }
 }
