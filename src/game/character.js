@@ -16,6 +16,11 @@ class Character {
     this.reversed = false
   }
 
+  speak(text, timeout = 4000) {
+
+    this.bubble = this.drawBubble(text, timeout)
+  }
+
   create() {
     this.sprites = this.conf.sprites.map((i) => {
       return PIXI.Texture.fromImage(i)
@@ -92,50 +97,50 @@ class Character {
     PIXI.tweenManager.update()
   }
 
-  speak(text, timeout = 4000) {
-    if (this.bubbleTimeout) {
-        if (this.bubble) {
-            this.bubble.destroy()
-        }
-      clearTimeout(this.bubbleTimeout)
-    }
+  drawBubble(text, timeout) {
+      console.log("Creating bubble", this.conf, " x ", this.char.x, " y ", this.char.y)
 
-    this.bubble = new PIXI.Sprite.fromImage(CONSTS.SPEECH_BUBBLE_URL)
-    this.bubble.anchor.set(0.5, 1)
-    this.bubble.height = 91
-    this.bubble.width = 262
-    this.bubble.x = this.char.x - 100
-    this.bubble.y = this.char.y
-    this.bubble.interactive = true
-    this.bubble.buttonMode = true
-    this.bubble.defaultCursor = 'pointer'
-    this.bubble.on('click', () => {
-      if (this.bubble) {
-          this.bubble.destroy()
-      }
-    })
-    this.engine.stage.addChild(this.bubble)
+      let txt = new PIXI.Text(text, {
+          fill: 0x333333,
+          fontSize: 30,
+          align: 'center',
+          fontFamily: 'Courier New'
+      })
+      txt.setTransform(-110, 30)
 
-    let txt = new PIXI.Text(text, {
-      fill: 0x333333,
-      fontSize: 60,
-      align: 'center',
-      fontFamily: 'Courier New'
-    })
-    txt.setTransform(-80, -180)
-    this.bubble.addChild(txt)
+      const bubble = new PIXI.Graphics()
+      bubble.beginFill(0xFFFFFF, 1)
+      bubble.lineStyle(5, 0x111111, 1)
+      bubble.drawEllipse(70, 50, 200, 40)
+      bubble.addChild(txt)
+      bubble.endFill()
 
-    this.engine.ticker.add(() => {
-      if (this.bubble && this.bubble.transform) {
-        this.bubble.x = this.char.x - 100
-      }
-    })
+      bubble.interactive = true
+      bubble.buttonMode = true
+      bubble.defaultCursor = 'pointer'
+      bubble.on('click', () => {
+          if (bubble) {
+              bubble.destroy()
+          }
+          clearTimeout(this.bubbleTimeout)
+      })
 
-    this.bubbleTimeout = setTimeout(() => {
-        if (this.bubble) {
-            this.bubble.destroy()
-        }
-    }, timeout)
+      this.engine.stage.addChild(bubble)
+
+      this.bubbleTimeout = setTimeout(() => {
+          if (bubble) {
+              bubble.destroy()
+          }
+          clearTimeout(this.bubbleTimeout)
+      }, timeout)
+
+      this.engine.ticker.add(() => {
+          if (bubble && bubble.transform) {
+              bubble.x = this.char.x - 230
+          }
+      })
+
+      return bubble
   }
 
     feed(pic, name, timeout = 4000) {
@@ -190,6 +195,7 @@ class Character {
             if (this.bubble) {
                 this.bubble.destroy()
             }
+            clearTimeout(this.bubbleTimeout)
         })
 
         this.bubble.addChild(txt)
