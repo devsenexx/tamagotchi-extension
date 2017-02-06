@@ -132,6 +132,67 @@ class Character {
     }, timeout)
   }
 
+    feed(pic, name, timeout = 4000) {
+        if (this.bubbleTimeout) {
+            this.bubble.destroy()
+            clearTimeout(this.bubbleTimeout)
+        }
+
+        const img = new PIXI.Sprite.fromImage(pic)
+        img.anchor.set(0.5, 1)
+        img.height = 91
+        img.width = 91
+        img.x = this.char.x - 100
+        img.y = this.char.y
+        img.interactive = true
+        img.buttonMode = true
+        img.defaultCursor = 'pointer'
+
+        const texts = [
+          `${name} just fed me, he's nice...`,
+          `I just had the most delicious turd...\n Prepared by ${name}!`,
+          `I think I'm getting gasy after dinner with ${name}`,
+        ]
+        const text = texts[Math.floor(Math.random() * texts.length)]
+        let txt = new PIXI.Text(text, {
+            fill: 0x333333,
+            fontSize: 60,
+            align: 'center',
+            fontFamily: 'Courier New'
+        })
+
+        txt.setTransform(-80, -180)
+
+        this.bubble = new PIXI.Sprite.fromImage(CONSTS.SPEECH_BUBBLE_URL)
+        this.bubble.anchor.set(0.5, 1)
+        this.bubble.height = 91
+        this.bubble.width = 262
+        this.bubble.x = this.char.x - 100
+        this.bubble.y = this.char.y
+        this.bubble.interactive = true
+        this.bubble.buttonMode = true
+        this.bubble.defaultCursor = 'pointer'
+        this.bubble.on('click', () => {
+            img.destroy()
+            txt.destroy()
+            this.bubble.destroy()
+        })
+
+        this.bubble.addChild(txt)
+        this.bubble.addChild(img)
+        this.engine.stage.addChild(this.bubble)
+
+        this.engine.ticker.add(() => {
+            if (this.bubble && this.bubble.transform) {
+                this.bubble.x = this.char.x - 100
+            }
+        })
+
+        this.bubbleTimeout = setTimeout(() => {
+            this.bubble.destroy()
+        }, timeout)
+    }
+
   walkAround() {
     if (this.char.x == this.walkDest ||
       this.char.x < WALK_MAX_WALL_DISTANCE ||

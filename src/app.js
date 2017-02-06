@@ -17,21 +17,19 @@ let bat = new Character({
 
 chrome.runtime.onMessage.addListener(
     (request, sender, sendResponse) => {
-        if (request.data && request.data.name == "feed") {
-            alert("fed")
-            console.log(request.data)
+        const {
+            data: {
+                user_id,
+                pic
+            }
+        } = request || {}
+
+        if (user_id && user_id != getUserName()) {
+            console.log("Received feed action", request.data)
+            bat.feed(pic, user_id)
         }
     }
 )
-
-
-
-
-  for (let i = 0; i < metas.length; i++) {
-    if (metas[i].getAttribute("name") == "user-login") {
-      return metas[i].getAttribute("content");
-    }
-  }
 
 
 function getPictureSrc() {

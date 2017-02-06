@@ -1,5 +1,6 @@
 module.exports = {
   SPEECH_BUBBLE_URL: chrome.extension.getURL('assets/img/speech.png'),
+  HEART_URL: chrome.extension.getURL('assets/img/heart.png'),
   ICON_URLS: (function () {
     mapped = Object.create(null);
     ['me-go-sleep', 'feed-me', 'im-bored', 'kishta'].forEach((i) => {
