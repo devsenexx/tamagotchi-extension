@@ -7,3 +7,8 @@ let bat = new Character({
   name: 'bat',
   asset: chrome.extension.getURL('assets/img/bat-stasis.png')
 })
+
+window.__TG = {
+  engine,
+  character: bat,
+}

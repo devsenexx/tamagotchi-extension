@@ -6,8 +6,9 @@
     "babel-preset-es2017": "^6.22.0",
     "babelify": "^7.3.0",
     "browserify": "^14.0.0",
-    "pixi.js": "^4.3.4",
-    "babelify": "^7.3.0"
+    "mo-js": "^0.288.1",
+    "pixi-tween": "^0.2.0",
+    "pixi.js": "^4.3.4"
   },
   "scripts": {
     "watch": "watchify src/app.js -o dist/bundle.js -t [ babelify --presets [ es2017 ] ]",
