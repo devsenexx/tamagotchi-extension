@@ -112,6 +112,7 @@ class Character {
 
     if (this.bubbleTimeout) {
       if (this.bubble) {
+        this.bubble.graphicsData = this.bubble.graphicsData || []
         this.bubble.destroy()
       }
       clearTimeout(this.bubbleTimeout)
