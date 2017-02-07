@@ -1,51 +1,52 @@
-backAndPostToken = require('./../utils/extension.js').backAndPostToken
+backAndPostToken = require('./../utils/extension.js')
+  .backAndPostToken
 
 class Action {
-    addAction(actionName,userName,picSrc) {
-        //API request
+  addAction(actionName, userName, picSrc) {
+    //API request
 
-        console.log("send_food")
-        chrome.runtime.sendMessage({
-            url: 'http://13.67.227.91:8080/action',
-            args: {
-                method: 'POST',
-                body: JSON.stringify({
-                    name: actionName,
-                    user_id: userName,
-                    pic: picSrc
-                }),
-                contentType: 'application/json'
-            }
-        });
+    console.log("send_food")
+    chrome.runtime.sendMessage({
+      url: 'http://13.67.227.91:8080/action',
+      args: {
+        method: 'POST',
+        body: JSON.stringify({
+          name: actionName,
+          user_id: userName,
+          pic: picSrc
+        }),
+        contentType: 'application/json'
+      }
+    });
 
-        chrome.runtime.onMessage.addListener(
-            function(request, sender, sendResponse) {
-                if (request.data) {
-                    console.log(request.data)
-                }
-            }
-        )
-    };
-
-
-     getUserName() {
-        var metas = document.getElementsByTagName('META');
-
-        for (var i=0; i<metas.length; i++) {
-            if (metas[i].getAttribute("name") == "user-login") {
-                return metas[i].getAttribute("content");
-            }
+    chrome.runtime.onMessage.addListener(
+      function (request, sender, sendResponse) {
+        if (request.data) {
+          console.log(request.data)
         }
+      }
+    )
+  };
 
-        return "";
+
+  getUserName() {
+    var metas = document.getElementsByTagName('META');
+
+    for (var i = 0; i < metas.length; i++) {
+      if (metas[i].getAttribute("name") == "user-login") {
+        return metas[i].getAttribute("content");
+      }
     }
 
-     getPictureSrc(){
-        return document.getElementsByClassName("avatar")[0].src
-    }
+    return "";
+  }
 
-    constructor() {
+  getPictureSrc() {
+    return document.getElementsByClassName("avatar")[0].src
+  }
 
-    };
+  constructor() {
+
+  };
 }
 module.exports = Action

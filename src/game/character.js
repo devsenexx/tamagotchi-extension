@@ -20,14 +20,14 @@ class Character {
 
     this.bubble = this.drawBubble(timeout)
 
-      let txt = new PIXI.Text(text, {
-          fill: 0x333333,
-          fontSize: 30,
-          align: 'center',
-          fontFamily: 'Courier New'
-      })
-      txt.setTransform(-110, 30)
-      this.bubble.addChild(txt)
+    let txt = new PIXI.Text(text, {
+      fill: 0x333333,
+      fontSize: 30,
+      align: 'center',
+      fontFamily: 'Courier New'
+    })
+    txt.setTransform(-110, 30)
+    this.bubble.addChild(txt)
 
   }
 
@@ -108,82 +108,75 @@ class Character {
   }
 
   drawBubble(timeout) {
-      console.log("Creating bubble", this.conf, " x ", this.char.x, " y ", this.char.y)
+    console.log("Creating bubble", this.conf, " x ", this.char.x, " y ", this.char.y)
 
-      if (this.bubbleTimeout) {
-          if (this.bubble) {
-              this.bubble.destroy()
-          }
-          clearTimeout(this.bubbleTimeout)
+    if (this.bubbleTimeout) {
+      if (this.bubble) {
+        this.bubble.destroy()
       }
+      clearTimeout(this.bubbleTimeout)
+    }
 
-      const bubble = new PIXI.Graphics()
-      bubble.beginFill(0xFFFFFF, 1)
-      bubble.lineStyle(5, 0x111111, 1)
-      bubble.drawEllipse(70, 50, 200, 40)
-      bubble.endFill()
+    const bubble = new PIXI.Graphics()
+    bubble.beginFill(0xFFFFFF, 1)
+    bubble.lineStyle(5, 0x111111, 1)
+    bubble.drawEllipse(70, 50, 200, 40)
+    bubble.endFill()
 
-      bubble.interactive = true
-      bubble.buttonMode = true
-      bubble.defaultCursor = 'pointer'
-      bubble.on('click', () => {
-          if (bubble) {
-              bubble.destroy()
-          }
-          clearTimeout(this.bubbleTimeout)
-      })
+    bubble.interactive = true
+    bubble.buttonMode = true
+    bubble.defaultCursor = 'pointer'
+    bubble.on('click', () => {
+      if (bubble) {
+        bubble.destroy()
+      }
+      clearTimeout(this.bubbleTimeout)
+    })
 
-      this.engine.stage.addChild(bubble)
+    this.engine.stage.addChild(bubble)
 
-      this.bubbleTimeout = setTimeout(() => {
-          if (bubble) {
-              bubble.destroy()
-          }
-          clearTimeout(this.bubbleTimeout)
-      }, timeout)
+    this.bubbleTimeout = setTimeout(() => {
+      if (bubble) {
+        bubble.destroy()
+      }
+      clearTimeout(this.bubbleTimeout)
+    }, timeout)
 
-      this.engine.ticker.add(() => {
-          if (bubble && bubble.transform) {
-              bubble.x = this.char.x - 230
-          }
-      })
+    this.engine.ticker.add(() => {
+      if (bubble && bubble.transform) {
+        bubble.x = this.char.x - 230
+      }
+    })
 
-      return bubble
+    return bubble
   }
 
-    feed(pic, name, timeout = 4000) {
-        this.bubble = this.drawBubble(timeout)
+  sayWithPic(text, pic, timeout = 4000) {
+    this.bubble = this.drawBubble(timeout)
 
-        const img = new PIXI.Sprite.fromImage(pic)
-        img.anchor.set(0.5, 1)
-        img.height = 50
-        img.width = 50
-        img.x = this.char.x - 100
-        img.y = this.char.y
-        img.interactive = true
-        img.buttonMode = true
-        img.defaultCursor = 'pointer'
+    const img = new PIXI.Sprite.fromImage(pic)
+    img.anchor.set(0.5, 1)
+    img.height = 50
+    img.width = 50
+    img.x = this.char.x - 100
+    img.y = this.char.y
+    img.interactive = true
+    img.buttonMode = true
+    img.defaultCursor = 'pointer'
+    let txt = new PIXI.Text(text, {
+      fill: 0x333333,
+      fontSize: 30,
+      align: 'center',
+      fontFamily: 'Courier New'
+    })
 
-        const texts = [
-          `${name} just fed me, he's nice...`,
-          `I just had the most delicious turd...\n Prepared by ${name}!`,
-          `I think I'm getting gasy after dinner with ${name}`,
-        ]
-        const text = texts[Math.floor(Math.random() * texts.length)]
-        let txt = new PIXI.Text(text, {
-            fill: 0x333333,
-            fontSize: 30,
-            align: 'center',
-            fontFamily: 'Courier New'
-        })
+    img.setTransform(-60, 70)
+    txt.setTransform(-20, 30)
 
-        img.setTransform(-60, 70)
-        txt.setTransform(-20, 30)
+    this.bubble.addChild(txt)
+    this.bubble.addChild(img)
 
-        this.bubble.addChild(txt)
-        this.bubble.addChild(img)
-
-    }
+  }
 
   walkAround() {
     if (this.char.x == this.walkDest ||
