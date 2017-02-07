@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
   } = request || {}
 
-  if (user_id /**&& user_id != new Action().getUserName()**/) {
+  if (user_id && user_id != new Action().getUserName()) {
     console.log("Received feed action", request.data)
     let texts, text
 
