@@ -33,3 +33,12 @@ channel.bind('feed', function (json) {
         });
     });
 });
+
+channel.bind('game', function (json) {
+    console.log("Got message", json)
+    chrome.tabs.query({}, function(tabs) {
+        tabs.forEach(function(tab) {
+            chrome.tabs.sendMessage(tab.id, {data: json})
+        });
+    });
+});
