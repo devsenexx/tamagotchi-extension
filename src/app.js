@@ -28,23 +28,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("Received feed action", request.data)
     let texts, text
 
-    switch (request.name) {
+    switch (request.data.name) {
       case 'feed':
         texts = [
-          `${name} just fed me, he's nice...`,
-          `I just had the most delicious turd...\nPrepared by ${name}!`,
-          `I think I'm getting gassy after dinner with ${name}`,
+          `${user_id} just fed me, he's nice...`,
+          `I just had the most delicious turd...\nPrepared by ${user_id}!`,
+          `I think I'm getting gassy after dinner with ${user_id}`,
         ]
         text = texts[Math.floor(Math.random() * texts.length)]
-      break;
+        break;
       case 'game':
         texts = [
-          `Me and ${name} just beat them at their own game!`
-          `${name} has magic fingers ;)`
-          `${name} and I crushed it! They didn't have a chance!`
+          `Me and ${user_id} just beat them at their own game!`,
+          `${user_id} has magic fingers ;)`,
+          `${user_id} and I crushed it! They didn't have a chance!`,
         ]
         text = texts[Math.floor(Math.random() * texts.length)]
-      break;
+        break;
     }
 
     bat.sayWithPic(text, pic)

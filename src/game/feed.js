@@ -63,25 +63,25 @@ class Feed {
 
           tween.start()
           this.clearTable()
-          setTimeout(() => {
-            let sentences = [
-              "Burrrppp!",
-              "That tasted great!",
-              "Aaah, that was yummy!",
-              // "I'm gonna be sick!"
-            ]
-            this.target.speak(sentences[Math.floor(Math.random() * sentences.length)], 3000)
-
-            if (this.scatter) {
+          if (!this.scatter) {
               setTimeout(() => {
-                let sentences = [
-                  "That was fun!",
-                  "You're really good at this!"
-                ]
-                this.target.speak(sentences[Math.floor(Math.random() * sentences.length)])
-              }, 3000)
-            }
-          })
+                  let sentences = [
+                      "Burrrppp!",
+                      "That tasted great!",
+                      "Aaah, that was yummy!",
+                      // "I'm gonna be sick!"
+                  ]
+                  this.target.speak(sentences[Math.floor(Math.random() * sentences.length)])
+              }, 2000)
+          } else {
+            setTimeout(() => {
+              let sentences = [
+                "That was fun!",
+                "You're really good at this!"
+              ]
+              this.target.speak(sentences[Math.floor(Math.random() * sentences.length)])
+            }, 2000)
+          }
 
           if (!KeyStorage.get('food-tween')) {
             this.target.engine.ticker.add(function () {
