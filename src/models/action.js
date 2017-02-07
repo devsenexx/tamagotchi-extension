@@ -7,7 +7,7 @@ class Action {
 
     console.log("send_food")
     chrome.runtime.sendMessage({
-      url: 'http://13.67.227.91:8080/action',
+      url: 'https://tamagotchi-backend.senexx.com/action',
       args: {
         method: 'POST',
         body: JSON.stringify({
