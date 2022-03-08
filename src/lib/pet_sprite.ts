@@ -46,7 +46,7 @@ export function usePetSprite({
       width - PADDING * 2, // dest w
       height - PADDING * 2 // dest h
     )
-  }, [frame])
+  }, [sliceNum])
 
   React.useEffect(() => {
     if (!canvas) {

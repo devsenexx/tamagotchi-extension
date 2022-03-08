@@ -1,10 +1,9 @@
-import Component from "./component"
-
-export type PetStatName = "health" | "energy" | "bladder"
+export type PetStatName = "hunger" | "energy" | "bladder"
 export interface PetStat {
   depleteRate: number
 }
 export type PetStats = Record<PetStatName, number>
+const DAY = 86400 // in secs
 
 export default class PetData {
   name: string
@@ -58,16 +57,16 @@ export default class PetData {
 
   get statData(): Record<PetStatName, PetStat> {
     return {
-      health: { depleteRate: 0.0005 },
-      energy: { depleteRate: 0.001 },
-      bladder: { depleteRate: 0.002 },
+      hunger: { depleteRate: 1 / (DAY * 2) }, // 2 days to empty
+      energy: { depleteRate: 1 / (DAY * 0.75) }, // 18 hours to empty
+      bladder: { depleteRate: 1 / (DAY * 0.2) }, // 4.8h to empty
     }
   }
 }
 
 function fullStats(): PetStats {
   return {
-    health: 1,
+    hunger: 1,
     energy: 1,
     bladder: 1,
   }

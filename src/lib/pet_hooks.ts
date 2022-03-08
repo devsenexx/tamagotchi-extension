@@ -4,12 +4,12 @@ import PetData from "../pet_data"
 import { getPet } from "../pet_utils"
 
 export function usePet(): PetData {
-  const [pet, setPet] = React.useState<PetData>()
+  const [pet, setPet] = React.useState<PetData>(new PetData({ name: "", sprite: "" }))
 
   React.useEffect(() => {
-    getPet().then((pet) => setPet(pet))
+    getPet({ sync: false }).then((pet) => setPet(pet))
     const id = setInterval(() => {
-      getPet().then((pet) => setPet(pet))
+      getPet({ sync: false }).then((pet) => setPet(pet))
     }, TICK_TIMEOUT)
     return () => clearInterval(id)
   }, [])
