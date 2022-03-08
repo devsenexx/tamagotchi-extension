@@ -1,25 +1,35 @@
 {
-  "name": "tamagotchi-extension",
-  "version": "0.1.1",
-  "dependencies": {
-    "babel-cli": "^6.22.2",
-    "babel-preset-es2017": "^6.22.0",
-    "babelify": "^7.3.0",
-    "browserify": "^14.0.0",
-    "bufferutil": "^2.0.0",
-    "mo-js": "^0.288.1",
-    "pixi-tween": "^0.2.0",
-    "pixi.js": "^4.3.4",
-    "pusher-client": "^1.1.0",
-    "utf-8-validate": "^3.0.1"
-  },
+  "name": "playpet-extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/playpet/playpet-extension.git",
+  "author": "Chen Asraf <chenasrafil@gmail.com>",
+  "license": "UNLICENSED",
+  "private": true,
   "scripts": {
-    "watch": "watchify src/app.js -o dist/bundle.js -t [ babelify --presets [ es2017 ] ]",
-    "build": "browserify src/app.js -t [ babelify --presets [ es2017 ] ] | uglifyjs > dist/bundle.min.js"
+    "build": "webpack --mode=production --node-env=production",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production --node-env=production",
+    "watch": "webpack --watch"
   },
   "devDependencies": {
-    "browserify": "^14.0.0",
-    "uglify-js": "^2.7.5",
-    "watchify": "^3.9.0"
+    "@types/chrome": "^0.0.179",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.13",
+    "@webpack-cli/generators": "^2.4.2",
+    "chrome-url-loader": "^1.2.0",
+    "copy-webpack-plugin": "^10.2.4",
+    "html-webpack-plugin": "^5.5.0",
+    "prettier": "^2.5.1",
+    "ts-loader": "^9.2.7",
+    "typescript": "^4.6.2",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2",
+    "workbox-webpack-plugin": "^6.5.1"
+  },
+  "dependencies": {
+    "pixi.js": "^6.2.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
   }
 }

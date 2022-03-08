@@ -1,0 +1,17 @@
+{
+  "name": "PlayPet",
+  "description": "Get your own virtual pet companion for your browser!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

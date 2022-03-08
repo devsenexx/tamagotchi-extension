@@ -1,0 +1,13 @@
+/* Resets */
+/* prettier-ignore */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+/* Main */
+html,
+body {
+  width: 300px;
+  padding: 0;
+  margin: 0;
+}
