@@ -13,11 +13,13 @@ export function usePetSprite({
   pet,
   width,
   height,
+  faceDirection,
 }: {
   canvas: HTMLCanvasElement
   pet: PetData
   width: number
   height: number
+  faceDirection: "left" | "right"
 }) {
   const { frame } = useTick()
 
@@ -35,20 +37,35 @@ export function usePetSprite({
     ctx.imageSmoothingEnabled = false
     ctx.clearRect(0, 0, width, height)
     // draw correct sliced frame
-    ctx.drawImage(
-      pet.spriteImage,
-      sliceNum * SPRITE_SIZE, // source x
-      0, // source y
-      SPRITE_SIZE, // source w
-      SPRITE_SIZE, // source h
-      PADDING, // dest x
-      PADDING, // dest y
-      width - PADDING * 2, // dest w
-      height - PADDING * 2 // dest h
-    )
+    // console.log("spriteImage", pet.spriteImage)
+    // ctx.save()
+    // console.log(faceDirection)
+    // if (faceDirection === "right") {
+    // ctx.translate(PADDING + width / 2, PADDING + width / 2)
+
+    // ctx.scale(-1, 1)
+    // ctx.setTransform(1, 0, 0, 1, 0, 0)
+    // ctx.translate(-(PADDING + width / 2), -(PADDING + width / 2))
+    // } else {
+    // ctx.scale(1, 1)
+    // ctx.setTransform(1, 0, 0, 1, 0, 0)
+    // }
+    if (pet.spriteImage) {
+      ctx.drawImage(
+        pet.spriteImage,
+        sliceNum * SPRITE_SIZE, // source x
+        0, // source y
+        SPRITE_SIZE, // source w
+        SPRITE_SIZE, // source h
+        PADDING, // dest x
+        PADDING, // dest y
+        width - PADDING * 2, // dest w
+        height - PADDING * 2 // dest h
+      )
+    }
   }, [sliceNum])
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (!canvas) {
       return
     }

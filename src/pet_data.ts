@@ -8,6 +8,7 @@ const DAY = 86400 // in secs
 export default class PetData {
   name: string
   sprite: string
+  spriteImage?: HTMLImageElement
 
   // stats
   stats: PetStats = fullStats()
@@ -24,6 +25,24 @@ export default class PetData {
     this.name = name
     this.sprite = sprite
     this.stats = stats
+    if (global.Image !== undefined && this.sprite) {
+      this.spriteImage = new Image()
+      this.spriteImage.src = chrome.runtime.getURL(`assets/images/pets/${this.sprite}.png`)
+
+      if (this.spriteImage.src !== "chrome-extension://invalid/") {
+        this.spriteImage.onerror = (e) => {
+          this.spriteImage = undefined
+          console.warn(
+            "error loading sprite",
+            chrome.runtime.getURL(`assets/images/pets/${this.sprite}.png`),
+            e
+          )
+        }
+      } else {
+        this.spriteImage = undefined
+        console.warn(`getURL failed for assets/images/pets/${this.sprite}.png`)
+      }
+    }
   }
 
   toJSON(): Record<string, any> {
@@ -47,12 +66,6 @@ export default class PetData {
 
   resetStats() {
     this.stats = fullStats()
-  }
-
-  get spriteImage(): HTMLImageElement {
-    const img = new Image()
-    img.src = `assets/images/pets/${this.sprite}.png`
-    return img
   }
 
   get statData(): Record<PetStatName, PetStat> {
