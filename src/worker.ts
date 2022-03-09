@@ -17,14 +17,36 @@ chrome.runtime.onInstalled.addListener(async () => {
 })
 
 chrome.alarms.create("tick", {
-  when: Date.now() + TICK_TIMEOUT,
+  when: Date.now(),
   periodInMinutes: TIMEOUT_IN_MINS,
+})
+
+chrome.alarms.create("lifecycle-tick", {
+  when: Date.now(),
+  periodInMinutes: TIMEOUT_IN_MINS / 4,
 })
 
 let timeToMove = MOVE_PERIOD
 let timeToSave = SAVE_PERIOD
+function handleResp() {
+  if (chrome.runtime.lastError) {
+    // console.warn(chrome.runtime.lastError)
+  }
+}
 
-chrome.alarms.onAlarm.addListener(async (alarm) => {
+const handleAlarms = async (alarm: chrome.alarms.Alarm): Promise<void> => {
+  switch (alarm.name) {
+    case "tick":
+      tick()
+      break
+
+    case "lifecycle-tick":
+      lifecycle()
+      break
+  }
+}
+
+async function tick() {
   const curPet = await getPet({ sync: false })
   const { popout } = await chrome.storage.local.get("popout")
   timeToMove -= TICK_TIMEOUT
@@ -41,8 +63,17 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     return
   }
 
-  const tabs = await chrome.tabs.query({ discarded: false })
-  console.log("tabs", tabs)
+  const activeTabs = await chrome.tabs.query({
+    active: true,
+    discarded: false,
+    currentWindow: true,
+  })
+  const inactiveTabs = await chrome.tabs.query({
+    active: false,
+    discarded: false,
+  })
+
+  // console.log("tabs", tabs)
 
   curPet.tick()
 
@@ -61,25 +92,32 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
   await savePet(curPet, { sync: false })
 
-  for (const tab of tabs) {
-    chrome.tabs.sendMessage(tab.id, { action: "tick", payload: curPet.toJSON() }, () => {
-      if (chrome.runtime.lastError) {
-        // console.warn(chrome.runtime.lastError)
-      }
-    })
+  for (const tab of inactiveTabs) {
+    chrome.tabs.sendMessage(tab.id, { action: "destroy" }, handleResp)
+  }
+
+  for (const tab of activeTabs) {
+    chrome.tabs.sendMessage(tab.id, { action: "tick", payload: curPet.toJSON() }, handleResp)
+
     if (moved) {
-      chrome.tabs.sendMessage(tab.id, { action: "move", payload: curPet.toJSON() }, () => {
-        if (chrome.runtime.lastError) {
-          // console.warn(chrome.runtime.lastError)
-        }
-      })
+      chrome.tabs.sendMessage(tab.id, { action: "move", payload: curPet.toJSON() }, handleResp)
     }
     if (saved) {
-      chrome.tabs.sendMessage(tab.id, { action: "save", payload: curPet.toJSON() }, () => {
-        if (chrome.runtime.lastError) {
-          // console.warn(chrome.runtime.lastError)
-        }
-      })
+      chrome.tabs.sendMessage(tab.id, { action: "save", payload: curPet.toJSON() }, handleResp)
     }
   }
-})
+}
+
+async function lifecycle() {
+  // const activeTabs = await chrome.tabs.query({ active: true, discarded: false })
+  const inactiveTabs = await chrome.tabs.query({
+    active: false,
+    discarded: false,
+  })
+
+  for (const tab of inactiveTabs) {
+    chrome.tabs.sendMessage(tab.id, { action: "destroy" }, handleResp)
+  }
+}
+
+chrome.alarms.onAlarm.addListener(handleAlarms)

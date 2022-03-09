@@ -2,7 +2,6 @@ import React from "react"
 import { usePetFromTick } from "../lib/pet_hooks"
 import { PetCanvas } from "./PetCanvas"
 import rand from "lodash/random"
-import { savePet } from "../pet_utils"
 import { MOVE_DURATION, POPOUT_FRAME_SIZE } from "../lib/consts"
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
@@ -25,10 +24,7 @@ export const ContentScriptHome: React.FC = () => {
     if (pet.position.x !== left) {
       setLeft(pet.position.x)
       if (freezeAnim) {
-        const id = setTimeout(() => {
-          console.log("enable smooth anim")
-          setFreezeAnim(false)
-        }, 300)
+        const id = setTimeout(() => setFreezeAnim(false), 300)
         return () => clearTimeout(id)
       }
     }
