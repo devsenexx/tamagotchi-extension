@@ -68,7 +68,13 @@ export const PopupHome: React.FC = () => {
           </Typography>
         </Grid>
         <Grid item sx={{ textAlign: "center" }}>
-          <PetCanvas pet={pet} width={FRAME_SIZE} height={FRAME_SIZE} faceDirection="left" />
+          <PetCanvas
+            pet={pet}
+            width={FRAME_SIZE}
+            height={FRAME_SIZE}
+            padding={16}
+            faceDirection="left"
+          />
         </Grid>
         <Grid item>
           <StatBars />

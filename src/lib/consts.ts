@@ -1,5 +1,5 @@
 export const TICK_TIMEOUT = 1000
-export const POPOUT_FRAME_SIZE = 96
+export const POPOUT_FRAME_SIZE = 72
 
 export const MOVE_PERIOD = 7 * 1000 // 20 secs
 export const MOVE_DURATION = 5000

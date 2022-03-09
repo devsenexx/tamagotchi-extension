@@ -8,12 +8,16 @@ export interface PetStat {
 export type PetStats = Record<PetStatName, number>
 const DAY = 86400 // in secs
 
+export interface Position extends Coords {
+  direction: "left" | "right"
+}
+
 export default class PetData {
   id: string
   name: string
   sprite: string
   spriteImage?: HTMLImageElement
-  position: Coords & { direction: "left" | "right" } = { x: 0, y: 0, direction: "left" }
+  position: Position = { x: 0, y: 0, direction: "left" }
 
   // stats
   stats: PetStats = fullStats()
@@ -27,7 +31,7 @@ export default class PetData {
     name: string
     sprite: string
     stats?: PetStats
-    position?: Coords & { direction: "left" | "right" }
+    position?: Position
   }) {
     this.name = name
     this.sprite = sprite
@@ -88,13 +92,11 @@ export default class PetData {
       max: (docWidth ?? 800) - frameSize,
     })
 
-    console.log("new pos:", { x, direction })
+    this.moveTo({ x: x, direction: direction })
+  }
 
-    this.position = {
-      ...this.position,
-      x: x,
-      direction: direction,
-    }
+  moveTo(newPosition: Partial<Position>) {
+    this.position = { ...this.position, ...newPosition }
   }
 
   resetStats() {

@@ -5,7 +5,6 @@ import { useTick } from "./tick"
 const MOD = 500
 const SPEED = 40
 const SPRITE_SIZE = 24
-const PADDING = 16
 const FRAME_COUNT = 2
 
 export function usePetSprite({
@@ -14,11 +13,13 @@ export function usePetSprite({
   width,
   height,
   faceDirection,
+  padding,
 }: {
   canvas: HTMLCanvasElement
   pet: PetData
   width: number
   height: number
+  padding: number
   faceDirection: "left" | "right"
 }) {
   const { frame } = useTick()
@@ -44,10 +45,10 @@ export function usePetSprite({
         0, // source y
         SPRITE_SIZE, // source w
         SPRITE_SIZE, // source h
-        PADDING, // dest x
-        PADDING, // dest y
-        width - PADDING * 2, // dest w
-        height - PADDING * 2 // dest h
+        padding, // dest x
+        padding, // dest y
+        width - padding * 2, // dest w
+        height - padding * 2 // dest h
       )
     }
   }, [sliceNum])

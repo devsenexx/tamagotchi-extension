@@ -4,6 +4,9 @@ import { PetCanvas } from "./PetCanvas"
 import rand from "lodash/random"
 import { savePet } from "../pet_utils"
 import { MOVE_DURATION, POPOUT_FRAME_SIZE } from "../lib/consts"
+import Box from "@mui/material/Box"
+import Grid from "@mui/material/Grid"
+import Typography from "@mui/material/Typography"
 
 export const ContentScriptHome: React.FC = () => {
   const pet = usePetFromTick()
@@ -25,7 +28,7 @@ export const ContentScriptHome: React.FC = () => {
         const id = setTimeout(() => {
           console.log("enable smooth anim")
           setFreezeAnim(false)
-        }, 100)
+        }, 300)
         return () => clearTimeout(id)
       }
     }
@@ -36,15 +39,24 @@ export const ContentScriptHome: React.FC = () => {
   }
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         position: "fixed",
         width: POPOUT_FRAME_SIZE,
         height: POPOUT_FRAME_SIZE,
+        marginTop: 1,
         top: 0,
         left,
-        transition: !freezeAnim ? `all ${MOVE_DURATION}ms ease-in-out` : undefined,
+        transition: `all ${!freezeAnim ? MOVE_DURATION : 300}ms ease-in-out`,
         zIndex: 999999999999,
+        "& > :last-child": {
+          opacity: 0,
+          pointerEvents: "none",
+        },
+        "&:hover > :last-child": {
+          opacity: 1,
+          pointerEvents: "initial",
+        },
       }}
     >
       <PetCanvas
@@ -52,10 +64,25 @@ export const ContentScriptHome: React.FC = () => {
         width={POPOUT_FRAME_SIZE}
         height={POPOUT_FRAME_SIZE}
         faceDirection={faceDirection}
+        padding={0}
       />
-      {/* <div style={{ textShadow: "0 0 0 2px black" }}>
-        {JSON.stringify({ x: left, y: top, direction: faceDirection })}
-      </div> */}
-    </div>
+      <Grid container justifyContent="center">
+        <Box
+          sx={{
+            background: "#00000080",
+            color: "white",
+            textAlign: "center",
+            borderRadius: 1,
+            padding: (theme) => theme.spacing(0, 0.5),
+            cursor: "default",
+            // marginTop: -2,
+          }}
+        >
+          <Typography variant="caption">{pet.name}</Typography>
+          {/* <br />
+        {JSON.stringify({ x: left, y: 0, direction: faceDirection })} */}
+        </Box>
+      </Grid>
+    </Box>
   )
 }
