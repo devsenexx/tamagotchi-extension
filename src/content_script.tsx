@@ -35,10 +35,8 @@ function doDestroy() {
 }
 
 chrome.runtime.onMessage.addListener(async ({ action, payload }) => {
-  if (action === "tick" && !getFrameEl()) {
-    if (payload) {
-      doInject()
-    }
+  if (action === "create" && !getFrameEl()) {
+    doInject()
   } else if (action === "destroy" && getFrameEl()) {
     doDestroy()
   }

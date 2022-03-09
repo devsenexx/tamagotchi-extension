@@ -36,8 +36,14 @@ export const DebugInfo = withTick(({ frame, delta }) => {
           </Link>
         </div>
 
+        {pet?.statKeys.map((k) => (
+          <div key={k}>
+            {k}: {(pet.timeEst[k] / 60 / 60).toFixed(2)}h
+          </div>
+        ))}
+
         <pre>
-          <code>{JSON.stringify(pet, undefined, 2)}</code>
+          <code>{JSON.stringify(pet?.toDebugJSON() ?? {}, undefined, 2)}</code>
         </pre>
 
         <pre>

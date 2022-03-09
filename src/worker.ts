@@ -68,10 +68,6 @@ async function tick() {
     discarded: false,
     currentWindow: true,
   })
-  const inactiveTabs = await chrome.tabs.query({
-    active: false,
-    discarded: false,
-  })
 
   // console.log("tabs", tabs)
 
@@ -94,10 +90,6 @@ async function tick() {
 
   await savePet(pet, { sync: false })
 
-  for (const tab of inactiveTabs) {
-    chrome.tabs.sendMessage(tab.id, { action: "destroy" }, handleResp)
-  }
-
   for (const tab of activeTabs) {
     chrome.tabs.sendMessage(tab.id, { action: "tick", payload: pet.toJSON() }, handleResp)
 
@@ -112,13 +104,28 @@ async function tick() {
 
 async function lifecycle() {
   // const activeTabs = await chrome.tabs.query({ active: true, discarded: false })
+
+  const activeTabs = await chrome.tabs.query({
+    active: true,
+    discarded: false,
+    currentWindow: true,
+  })
+
   const inactiveTabs = await chrome.tabs.query({
     active: false,
     discarded: false,
   })
 
-  for (const tab of inactiveTabs) {
+  const inactiveWindowTabs = await chrome.tabs.query({
+    currentWindow: false,
+    discarded: false,
+  })
+
+  for (const tab of [...inactiveTabs, ...inactiveWindowTabs]) {
     chrome.tabs.sendMessage(tab.id, { action: "destroy" }, handleResp)
+  }
+  for (const tab of activeTabs) {
+    chrome.tabs.sendMessage(tab.id, { action: "create" }, handleResp)
   }
 }
 

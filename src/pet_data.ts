@@ -1,3 +1,4 @@
+import { TICK_TIMEOUT } from "./lib/consts"
 import { Coords } from "./lib/types"
 import { getRandomMovement } from "./pet_utils"
 
@@ -16,7 +17,7 @@ export interface PetState {
   needsCleaning: boolean
 }
 export type PetStats = Record<PetStatName, number>
-const SEC = 1000
+const SEC = 1000 / TICK_TIMEOUT
 const MIN = SEC * 60
 const HOUR = MIN * 60 //in secs
 const DAY = HOUR * 24 // in secs
@@ -52,6 +53,7 @@ export default class PetData {
     this.name = name
     this.sprite = sprite
     this.stats = stats
+
     if (position) {
       this.position = { ...this.position, ...position }
     }
@@ -89,6 +91,27 @@ export default class PetData {
       stats: this.stats,
       state: this.state,
       position: this.position,
+    }
+  }
+
+  toDebugJSON() {
+    return {
+      ...this.toJSON(),
+      statData: this.statData,
+      timeEst: this.timeEst,
+    }
+  }
+
+  calcTimeLeft(distance: number, speed: number): number {
+    return distance / speed
+  }
+
+  get timeEst(): Record<PetStatName, number> {
+    const MUL = 1
+    return {
+      hunger: this.calcTimeLeft(this.stats.hunger, this.statData.hunger.depleteRate * MUL),
+      energy: this.calcTimeLeft(this.stats.energy, this.statData.energy.depleteRate * MUL),
+      bladder: this.calcTimeLeft(this.stats.bladder, this.statData.bladder.depleteRate * MUL),
     }
   }
 
@@ -165,7 +188,7 @@ export default class PetData {
   get statData(): Record<PetStatName, PetStat> {
     return {
       hunger: {
-        depleteRate: 1 / (DAY * 2), // 2d to empty
+        depleteRate: 1 / (HOUR * 6), // 6h to empty
         restoreRate: 1 / (SEC * 30), // 30s to full
         action: this.state.eating ? "restore" : "deplete",
         onFull: () => (this.state.eating = false),
