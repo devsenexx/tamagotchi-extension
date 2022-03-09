@@ -1,10 +1,13 @@
 import React from "react"
 import { ProgressBar } from "./ProgressBar"
 import Grid from "@mui/material/Grid"
-import { usePet } from "../lib/pet_hooks"
+import { usePetPeriodically } from "../lib/pet_hooks"
 
 export const StatBars = () => {
-  const pet = usePet()
+  const pet = usePetPeriodically()
+  if (!pet) {
+    return null
+  }
   return (
     <Grid container spacing={1}>
       <Grid item xs={4}>
@@ -22,7 +25,7 @@ export const StatBars = () => {
         <ProgressBar
           value={pet.stats.energy}
           fg="#009c0d"
-          bg="#8fff9e"
+          bg="#64b36e"
           textColor="#ffffff"
           // label={(perc) => `Energy ${perc.toFixed(2)}%`}
           label="Energy"

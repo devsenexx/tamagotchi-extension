@@ -1,9 +1,14 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import { ContentScriptApp } from "./components/ContentScriptApp"
+import "./lib/pet_hooks"
+
+// chrome.runtime.onSuspend.addListener(doDestroy)
 
 async function main() {
   const { popout } = await chrome.storage.local.get("popout")
+  await chrome.storage.local.set({ docWidth: document.body.clientWidth })
+
   console.log("PlayPet popout", popout)
   if (popout) {
     doInject()
@@ -28,7 +33,7 @@ function doDestroy() {
   document.body.removeChild(root)
 }
 
-chrome.runtime.onMessage.addListener(({ action, payload }) => {
+chrome.runtime.onMessage.addListener(async ({ action, payload }) => {
   if (action === "popout") {
     if (payload) {
       doInject()

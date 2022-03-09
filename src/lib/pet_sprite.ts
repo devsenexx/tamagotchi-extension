@@ -36,20 +36,7 @@ export function usePetSprite({
     // setup canvas
     ctx.imageSmoothingEnabled = false
     ctx.clearRect(0, 0, width, height)
-    // draw correct sliced frame
-    // console.log("spriteImage", pet.spriteImage)
-    // ctx.save()
-    // console.log(faceDirection)
-    // if (faceDirection === "right") {
-    // ctx.translate(PADDING + width / 2, PADDING + width / 2)
 
-    // ctx.scale(-1, 1)
-    // ctx.setTransform(1, 0, 0, 1, 0, 0)
-    // ctx.translate(-(PADDING + width / 2), -(PADDING + width / 2))
-    // } else {
-    // ctx.scale(1, 1)
-    // ctx.setTransform(1, 0, 0, 1, 0, 0)
-    // }
     if (pet.spriteImage) {
       ctx.drawImage(
         pet.spriteImage,

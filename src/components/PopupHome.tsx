@@ -1,5 +1,5 @@
 import React from "react"
-import { usePet } from "../lib/pet_hooks"
+import { usePetPeriodically } from "../lib/pet_hooks"
 import { PetCanvas } from "./PetCanvas"
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
@@ -7,19 +7,37 @@ import Typography from "@mui/material/Typography"
 import { StatBars } from "./StatBars"
 import { DebugInfo } from "./DebugInfo"
 import Switch from "@mui/material/Switch"
+import Link from "@mui/material/Link"
+import { FormControlLabel } from "@mui/material"
+import { savePet } from "../pet_utils"
+import PetData from "../pet_data"
 
 const FRAME_SIZE = 128
 
 export const PopupHome: React.FC = () => {
-  const pet = usePet()
+  const pet = usePetPeriodically()
   const [popout, setPopout] = React.useState(false)
 
   React.useEffect(() => {
     chrome.storage.local.get("popout").then(({ popout }) => setPopout(popout))
   }, [])
 
+  console.log("pet", pet)
+
   if (!pet) {
-    return null
+    return (
+      <Link
+        href="#"
+        onClick={(e) => {
+          e.preventDefault()
+          const newPet = new PetData({ name: "Jimmy", sprite: "chicken-test" })
+          savePet(newPet, { sync: true })
+          savePet(newPet, { sync: false })
+        }}
+      >
+        Create
+      </Link>
+    )
   }
 
   return (
@@ -30,26 +48,22 @@ export const PopupHome: React.FC = () => {
             {pet.name}
 
             <div>
-              <Switch
-                checked={popout}
-                onChange={(e, checked) => {
-                  chrome.storage.local.set({ popout: checked })
-                  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, { action: "popout", payload: checked })
-                  })
-                  setPopout(checked)
-                }}
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={popout}
+                    onChange={async (e, checked) => {
+                      chrome.storage.local.set({ popout: checked })
+                      const tabs = await chrome.tabs.query({})
+                      for (const tab of tabs) {
+                        chrome.tabs.sendMessage(tab.id, { action: "popout", payload: checked })
+                      }
+                      setPopout(checked)
+                    }}
+                  />
+                }
+                label="Pop Out"
               />
-              <a
-                href="#"
-                onClick={async (e) => {
-                  e.preventDefault()
-                  // pet.resetStats()
-                  const { popout } = await chrome.storage.local.get("popout")
-                }}
-              >
-                Toggle popout
-              </a>
             </div>
           </Typography>
         </Grid>

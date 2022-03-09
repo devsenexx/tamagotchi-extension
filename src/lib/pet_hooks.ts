@@ -1,17 +1,42 @@
 import React from "react"
-import { TICK_TIMEOUT } from "../lib/consts"
 import PetData from "../pet_data"
 import { getPet } from "../pet_utils"
+import { TICK_TIMEOUT } from "./consts"
 
-export function usePet(): PetData {
-  const [pet, setPet] = React.useState<PetData>(new PetData({ name: "", sprite: "chicken-test" }))
+export function usePetFromTick(): PetData | undefined {
+  const [pet, setPet] = React.useState<PetData>()
+
+  const messageHandler = React.useCallback(
+    ({ action, payload }: any, _, sendResponse: any) => {
+      if (action === "move") {
+        setPet(new PetData(payload))
+      }
+      sendResponse({ action: "ack" })
+    },
+    [pet]
+  )
+
+  React.useEffect(() => {
+    chrome.runtime.onMessage.addListener(messageHandler)
+    return () => chrome.runtime.onMessage.removeListener(messageHandler)
+  }, [pet])
 
   React.useEffect(() => {
     getPet({ sync: false }).then((pet) => setPet(pet))
-    // const id = setInterval(() => {
-    //   getPet({ sync: false }).then((pet) => setPet(pet))
-    // }, TICK_TIMEOUT)
-    // return () => clearInterval(id)
+  }, [])
+
+  return pet
+}
+export function usePetPeriodically(): PetData | undefined {
+  const [pet, setPet] = React.useState<PetData>()
+
+  React.useEffect(() => {
+    getPet({ sync: false }).then((pet) => setPet(pet))
+
+    const id = setInterval(() => {
+      getPet({ sync: false }).then((pet) => setPet(pet))
+    }, TICK_TIMEOUT)
+    return () => clearInterval(id)
   }, [])
   return pet
 }

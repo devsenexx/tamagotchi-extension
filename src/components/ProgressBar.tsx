@@ -26,7 +26,7 @@ export const ProgressBar: React.FC<{
       <Typography variant="caption" textAlign="center" component="p">
         {typeof label === "function" ? label(perc) : label}
       </Typography>
-      <Box sx={{ backgroundColor: bg, height: HEIGHT, borderRadius: 1 }}>
+      <Box sx={{ backgroundColor: bg, height: HEIGHT, borderRadius: 1, position: "relative" }}>
         <Box
           sx={{
             borderRadius: 1,
@@ -34,27 +34,23 @@ export const ProgressBar: React.FC<{
             backgroundColor: fg,
             height: HEIGHT,
             color: textColor,
+            overflow: "visible",
           }}
-        >
-          {showPerc && perc >= 50 ? (
-            <Typography
-              variant="caption"
-              color={textColor}
-              textAlign="center"
-              component="p"
-              sx={{ lineHeight: `${HEIGHT}px` }}
-            >
-              {perc.toFixed(2)}%
-            </Typography>
-          ) : null}
-        </Box>
-        {showPerc && perc < 50 ? (
+        />
+        {showPerc ? (
           <Typography
             variant="caption"
             color={textColor}
             textAlign="center"
             component="p"
-            sx={{ lineHeight: `${HEIGHT}px` }}
+            sx={{
+              lineHeight: `${HEIGHT}px`,
+              position: "absolute",
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+            }}
           >
             {perc.toFixed(2)}%
           </Typography>

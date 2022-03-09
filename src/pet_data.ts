@@ -1,3 +1,6 @@
+import { Coords } from "./lib/types"
+import { getRandomMovement } from "./pet_utils"
+
 export type PetStatName = "hunger" | "energy" | "bladder"
 export interface PetStat {
   depleteRate: number
@@ -6,9 +9,11 @@ export type PetStats = Record<PetStatName, number>
 const DAY = 86400 // in secs
 
 export default class PetData {
+  id: string
   name: string
   sprite: string
   spriteImage?: HTMLImageElement
+  position: Coords & { direction: "left" | "right" } = { x: 0, y: 0, direction: "left" }
 
   // stats
   stats: PetStats = fullStats()
@@ -17,15 +22,24 @@ export default class PetData {
     name,
     sprite,
     stats = fullStats(),
+    position,
   }: {
     name: string
     sprite: string
     stats?: PetStats
+    position?: Coords & { direction: "left" | "right" }
   }) {
     this.name = name
     this.sprite = sprite
     this.stats = stats
-    if (global.Image !== undefined && this.sprite) {
+    if (position) {
+      this.position = { ...this.position, ...position }
+    }
+    this.initSprite()
+  }
+
+  private initSprite() {
+    if (global.Image !== undefined && this.sprite && chrome.runtime?.id) {
       this.spriteImage = new Image()
       this.spriteImage.src = chrome.runtime.getURL(`assets/images/pets/${this.sprite}.png`)
 
@@ -50,6 +64,7 @@ export default class PetData {
       name: this.name,
       sprite: this.sprite,
       stats: this.stats,
+      position: this.position,
     }
   }
 
@@ -61,6 +76,24 @@ export default class PetData {
     for (const key of Object.keys(this.stats)) {
       const k = key as PetStatName
       this.stats[k] = Math.max(this.stats[k] - this.statData[k].depleteRate, 0)
+    }
+  }
+
+  async moveRandomly(frameSize: number) {
+    const { docWidth } = await chrome.storage.local.get("docWidth")
+    const { x, direction } = getRandomMovement({
+      frameSize,
+      x: this.position.x,
+      faceDirection: this.position.direction,
+      max: (docWidth ?? 800) - frameSize,
+    })
+
+    console.log("new pos:", { x, direction })
+
+    this.position = {
+      ...this.position,
+      x: x,
+      direction: direction,
     }
   }
 
