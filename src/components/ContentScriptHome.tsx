@@ -2,14 +2,14 @@ import React from "react"
 import { usePetFromTick } from "../lib/pet_hooks"
 import { PetCanvas } from "./PetCanvas"
 import rand from "lodash/random"
-import { MOVE_DURATION, POPOUT_FRAME_SIZE } from "../lib/consts"
+import { MOVE_DURATION, DOCUMENT_FRAME_SIZE } from "../lib/consts"
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
 import Typography from "@mui/material/Typography"
 
 export const ContentScriptHome: React.FC = () => {
   const pet = usePetFromTick()
-  const [left, setLeft] = React.useState(rand(window.innerWidth - POPOUT_FRAME_SIZE))
+  const [left, setLeft] = React.useState(rand(window.innerWidth - DOCUMENT_FRAME_SIZE))
   const [faceDirection, setDirection] = React.useState<"left" | "right">("left")
   const [freezeAnim, setFreezeAnim] = React.useState(true)
 
@@ -38,18 +38,21 @@ export const ContentScriptHome: React.FC = () => {
     <Box
       sx={{
         position: "fixed",
-        width: POPOUT_FRAME_SIZE,
-        height: POPOUT_FRAME_SIZE,
+        width: DOCUMENT_FRAME_SIZE,
+        height: DOCUMENT_FRAME_SIZE,
         marginTop: 1,
         top: 0,
         left,
         transition: `all ${!freezeAnim ? MOVE_DURATION : 300}ms ease-in-out`,
         zIndex: 999999999999,
         "& > :last-child": {
+          transform: "translateY(-10px)",
           opacity: 0,
           pointerEvents: "none",
+          transition: "all 150ms ease-in-out",
         },
         "&:hover > :last-child": {
+          transform: "translateY(0px)",
           opacity: 1,
           pointerEvents: "initial",
         },
@@ -57,8 +60,8 @@ export const ContentScriptHome: React.FC = () => {
     >
       <PetCanvas
         pet={pet}
-        width={POPOUT_FRAME_SIZE}
-        height={POPOUT_FRAME_SIZE}
+        width={DOCUMENT_FRAME_SIZE}
+        height={DOCUMENT_FRAME_SIZE}
         faceDirection={faceDirection}
         padding={0}
       />

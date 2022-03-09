@@ -12,8 +12,7 @@ import { FormControlLabel } from "@mui/material"
 import { savePet } from "../pet_utils"
 import PetData from "../pet_data"
 import { Actions } from "./Actions"
-
-const FRAME_SIZE = 128
+import { POPUP_FRAME_SIZE } from "../lib/consts"
 
 export const PopupHome: React.FC = () => {
   const pet = usePetPeriodically()
@@ -22,8 +21,6 @@ export const PopupHome: React.FC = () => {
   React.useEffect(() => {
     chrome.storage.local.get("popout").then(({ popout }) => setPopout(popout))
   }, [])
-
-  console.log("pet", pet)
 
   if (!pet) {
     return (
@@ -71,8 +68,8 @@ export const PopupHome: React.FC = () => {
         <Grid item sx={{ textAlign: "center" }}>
           <PetCanvas
             pet={pet}
-            width={FRAME_SIZE}
-            height={FRAME_SIZE}
+            width={POPUP_FRAME_SIZE}
+            height={POPUP_FRAME_SIZE}
             padding={16}
             faceDirection="left"
           />

@@ -35,6 +35,21 @@ export const DebugInfo = withTick(({ frame, delta }) => {
             New Pet
           </Link>
         </div>
+        <div>
+          <Link
+            href="#"
+            component="a"
+            onClick={(e) => {
+              e.preventDefault()
+              // pet.resetStats()
+              const newPet = new PetData({ ...pet, background: "bg1" })
+              savePet(newPet, { sync: true })
+              savePet(newPet, { sync: false })
+            }}
+          >
+            Update BG
+          </Link>
+        </div>
 
         {pet?.statKeys.map((k) => (
           <div key={k}>

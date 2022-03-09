@@ -1,3 +1,4 @@
+import clamp from "lodash/clamp"
 import { TICK_TIMEOUT } from "./lib/consts"
 import { Coords } from "./lib/types"
 import { getRandomMovement } from "./pet_utils"
@@ -30,7 +31,9 @@ export default class PetData {
   id: string
   name: string
   sprite: string
+  background: string
   spriteImage?: HTMLImageElement
+  backgroundImage?: HTMLImageElement
   position: Position = { x: 0, y: 0, direction: "left" }
 
   // state & stats
@@ -40,18 +43,21 @@ export default class PetData {
   constructor({
     name,
     sprite,
+    background,
     stats = fullStats(),
     position,
     state,
   }: {
     name: string
     sprite: string
+    background?: string
     stats?: PetStats
     position?: Position
     state?: PetState
   }) {
     this.name = name
     this.sprite = sprite
+    this.background = background
     this.stats = stats
 
     if (position) {
@@ -60,26 +66,50 @@ export default class PetData {
     if (state) {
       this.state = { ...this.state, ...state }
     }
-    this.initSprite()
+
+    this.initSprites()
   }
 
-  private initSprite() {
-    if (global.Image !== undefined && this.sprite && chrome.runtime?.id) {
-      this.spriteImage = new Image()
-      this.spriteImage.src = chrome.runtime.getURL(`assets/images/pets/${this.sprite}.png`)
+  private initSprites() {
+    if (global.Image !== undefined && chrome.runtime?.id) {
+      if (this.sprite) {
+        this.spriteImage = new Image()
+        this.spriteImage.src = chrome.runtime.getURL(`assets/images/pets/${this.sprite}.png`)
 
-      if (this.spriteImage.src !== "chrome-extension://invalid/") {
-        this.spriteImage.onerror = (e) => {
+        if (this.spriteImage.src !== "chrome-extension://invalid/") {
+          this.spriteImage.onerror = (e) => {
+            this.spriteImage = undefined
+            console.warn(
+              "error loading sprite",
+              chrome.runtime.getURL(`assets/images/pets/${this.sprite}.png`),
+              e
+            )
+          }
+        } else {
           this.spriteImage = undefined
-          console.warn(
-            "error loading sprite",
-            chrome.runtime.getURL(`assets/images/pets/${this.sprite}.png`),
-            e
-          )
+          console.warn(`getURL failed for assets/images/pets/${this.sprite}.png`)
         }
-      } else {
-        this.spriteImage = undefined
-        console.warn(`getURL failed for assets/images/pets/${this.sprite}.png`)
+      }
+
+      if (this.background) {
+        this.backgroundImage = new Image()
+        this.backgroundImage.src = chrome.runtime.getURL(
+          `assets/images/backgrounds/${this.background}.png`
+        )
+
+        if (this.backgroundImage.src !== "chrome-extension://invalid/") {
+          this.backgroundImage.onerror = (e) => {
+            this.backgroundImage = undefined
+            console.warn(
+              "error loading background",
+              chrome.runtime.getURL(`assets/images/backgrounds/${this.background}.png`),
+              e
+            )
+          }
+        } else {
+          this.backgroundImage = undefined
+          console.warn(`getURL failed for assets/images/backgrounds/${this.background}.png`)
+        }
       }
     }
   }
@@ -88,6 +118,7 @@ export default class PetData {
     return {
       name: this.name,
       sprite: this.sprite,
+      background: this.background,
       stats: this.stats,
       state: this.state,
       position: this.position,
@@ -107,11 +138,10 @@ export default class PetData {
   }
 
   get timeEst(): Record<PetStatName, number> {
-    const MUL = 1
     return {
-      hunger: this.calcTimeLeft(this.stats.hunger, this.statData.hunger.depleteRate * MUL),
-      energy: this.calcTimeLeft(this.stats.energy, this.statData.energy.depleteRate * MUL),
-      bladder: this.calcTimeLeft(this.stats.bladder, this.statData.bladder.depleteRate * MUL),
+      hunger: this.calcTimeLeft(this.stats.hunger, this.statData.hunger.depleteRate),
+      energy: this.calcTimeLeft(this.stats.energy, this.statData.energy.depleteRate),
+      bladder: this.calcTimeLeft(this.stats.bladder, this.statData.bladder.depleteRate),
     }
   }
 
@@ -130,16 +160,16 @@ export default class PetData {
   private updateStats() {
     for (const key of this.statKeys) {
       const k = key as PetStatName
-      let change: number
+      let change = 0
 
       switch (this.statData[k].action) {
         case "deplete":
           change = -this.statData[k].depleteRate
-          this.stats[k] = Math.max(this.stats[k] + change, 0)
+          this.stats[k] = clamp(this.stats[k] + change, 0, 1)
           break
         case "restore":
           change = +this.statData[k].restoreRate
-          this.stats[k] = Math.max(this.stats[k] + change, 0)
+          this.stats[k] = clamp(this.stats[k] + change, 0, 1)
           break
         default:
           break

@@ -5,6 +5,7 @@ import { useTick } from "./tick"
 const MOD = 500
 const SPEED = 40
 const SPRITE_SIZE = 24
+const BG_SIZE = 32
 const FRAME_COUNT = 2
 
 export function usePetSprite({
