@@ -11,6 +11,7 @@ import Link from "@mui/material/Link"
 import { FormControlLabel } from "@mui/material"
 import { savePet } from "../pet_utils"
 import PetData from "../pet_data"
+import { Actions } from "./Actions"
 
 const FRAME_SIZE = 128
 
@@ -78,6 +79,9 @@ export const PopupHome: React.FC = () => {
         </Grid>
         <Grid item>
           <StatBars />
+        </Grid>
+        <Grid item>
+          <Actions />
         </Grid>
         <Grid item sx={{ maxWidth: "100% !important" }}>
           <DebugInfo />

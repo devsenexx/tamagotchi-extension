@@ -47,15 +47,15 @@ const handleAlarms = async (alarm: chrome.alarms.Alarm): Promise<void> => {
 }
 
 async function tick() {
-  const curPet = await getPet({ sync: false })
+  const pet = await getPet({ sync: false })
   const { popout } = await chrome.storage.local.get("popout")
   timeToMove -= TICK_TIMEOUT
   timeToSave -= TICK_TIMEOUT
-  console.log("tick", { timeToMove, timeToSave, curPet, popout })
+  console.log("tick", { timeToMove, timeToSave, curPet: pet, popout })
   let moved = false
   let saved = false
 
-  if (!curPet) {
+  if (!pet) {
     if (!popout) {
       timeToMove -= MOVE_PERIOD
       timeToSave -= SAVE_PERIOD
@@ -75,35 +75,37 @@ async function tick() {
 
   // console.log("tabs", tabs)
 
-  curPet.tick()
+  pet.tick()
 
   if (timeToMove <= 0 && popout) {
-    await curPet.moveRandomly(POPOUT_FRAME_SIZE)
-    timeToMove = MOVE_PERIOD
-    moved = true
+    if (!pet.isDoingSomething) {
+      await pet.moveRandomly(POPOUT_FRAME_SIZE)
+      timeToMove = MOVE_PERIOD
+      moved = true
+    }
   }
 
   if (timeToSave <= 0) {
-    console.log("Saving", curPet)
-    savePet(curPet, { sync: true })
+    console.log("Saving", pet)
+    savePet(pet, { sync: true })
     timeToSave = SAVE_PERIOD
     saved = true
   }
 
-  await savePet(curPet, { sync: false })
+  await savePet(pet, { sync: false })
 
   for (const tab of inactiveTabs) {
     chrome.tabs.sendMessage(tab.id, { action: "destroy" }, handleResp)
   }
 
   for (const tab of activeTabs) {
-    chrome.tabs.sendMessage(tab.id, { action: "tick", payload: curPet.toJSON() }, handleResp)
+    chrome.tabs.sendMessage(tab.id, { action: "tick", payload: pet.toJSON() }, handleResp)
 
     if (moved) {
-      chrome.tabs.sendMessage(tab.id, { action: "move", payload: curPet.toJSON() }, handleResp)
+      chrome.tabs.sendMessage(tab.id, { action: "move", payload: pet.toJSON() }, handleResp)
     }
     if (saved) {
-      chrome.tabs.sendMessage(tab.id, { action: "save", payload: curPet.toJSON() }, handleResp)
+      chrome.tabs.sendMessage(tab.id, { action: "save", payload: pet.toJSON() }, handleResp)
     }
   }
 }
