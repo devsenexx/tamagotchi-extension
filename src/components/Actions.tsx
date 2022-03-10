@@ -19,7 +19,7 @@ export const Actions = () => {
   ): React.MouseEventHandler<HTMLButtonElement> {
     return async () => {
       pet.state[key] = state
-      await savePet(pet, { sync: false })
+      await savePet(pet)
     }
   }
 

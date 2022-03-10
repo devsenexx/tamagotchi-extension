@@ -7,6 +7,7 @@ import "./lib/pet_hooks"
 // chrome.runtime.onSuspend.addListener(doDestroy)
 
 async function main() {
+  wake()
   const { popout } = await chrome.storage.local.get("popout")
   await chrome.storage.local.set({ docWidth: document.body.clientWidth })
 
@@ -16,8 +17,15 @@ async function main() {
   }
 }
 
+function wake() {
+  setTimeout(() => {
+    chrome.runtime.sendMessage("ping")
+    wake()
+  }, 10000)
+}
+
 function doInject() {
-  console.log("Content script playpet")
+  console.trace("Injecting PlayPet Frame")
   const root = document.createElement("div")
   root.id = FRAME_ID
   document.body.appendChild(root)
@@ -29,12 +37,13 @@ function getFrameEl(): HTMLDivElement | undefined {
 }
 
 function doDestroy() {
-  console.log("Content script playpet: destroy")
+  console.trace("Destroying PlayPet Frame")
   const root = getFrameEl()
   document.body.removeChild(root)
 }
 
 chrome.runtime.onMessage.addListener(async ({ action, payload }) => {
+  // console.log("cs message", { action })
   if (action === "create" && !getFrameEl()) {
     doInject()
   } else if (action === "destroy" && getFrameEl()) {

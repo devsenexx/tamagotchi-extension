@@ -22,7 +22,7 @@ export function usePetFromTick(): PetData | undefined {
   }, [pet])
 
   React.useEffect(() => {
-    getPet({ sync: false }).then((pet) => setPet(pet))
+    getPet().then((pet) => setPet(pet))
   }, [])
 
   return pet
@@ -31,10 +31,10 @@ export function usePetPeriodically(): PetData | undefined {
   const [pet, setPet] = React.useState<PetData>()
 
   React.useEffect(() => {
-    getPet({ sync: false }).then((pet) => setPet(pet))
+    getPet().then((pet) => setPet(pet))
 
     const id = setInterval(() => {
-      getPet({ sync: false }).then((pet) => setPet(pet))
+      getPet().then((pet) => setPet(pet))
     }, TICK_TIMEOUT)
     return () => clearInterval(id)
   }, [])

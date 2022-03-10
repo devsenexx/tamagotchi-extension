@@ -8,7 +8,7 @@ export async function getPet({
 }: {
   sync?: boolean
   create?: boolean
-}): Promise<PetData | undefined> {
+} = {}): Promise<PetData | undefined> {
   const { currentPet } = await chrome.storage[sync ? "sync" : "local"].get("currentPet")
   if (currentPet) {
     return new PetData(currentPet)
@@ -19,7 +19,7 @@ export async function getPet({
   }
 }
 
-export async function savePet(pet: PetData, { sync }: { sync?: boolean }): Promise<void> {
+export async function savePet(pet: PetData, { sync }: { sync?: boolean } = {}): Promise<void> {
   return chrome.storage[sync ? "sync" : "local"].set({ currentPet: pet })
 }
 

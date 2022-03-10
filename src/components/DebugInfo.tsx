@@ -29,7 +29,7 @@ export const DebugInfo = withTick(({ frame, delta }) => {
               // pet.resetStats()
               const newPet = new PetData({ name: pet.name, sprite: "chicken-test" })
               savePet(newPet, { sync: true })
-              savePet(newPet, { sync: false })
+              savePet(newPet)
             }}
           >
             New Pet
@@ -44,7 +44,7 @@ export const DebugInfo = withTick(({ frame, delta }) => {
               // pet.resetStats()
               const newPet = new PetData({ ...pet, background: "bg-1" })
               savePet(newPet, { sync: true })
-              savePet(newPet, { sync: false })
+              savePet(newPet)
             }}
           >
             Update BG

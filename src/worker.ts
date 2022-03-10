@@ -13,7 +13,7 @@ import { getPet, savePet } from "./pet_utils"
 chrome.runtime.onInstalled.addListener(async () => {
   console.log("Extension installed!")
   const pet = await getPet({ sync: true })
-  await savePet(pet, { sync: false })
+  await savePet(pet)
 })
 
 chrome.alarms.create("tick", {
@@ -47,7 +47,7 @@ const handleAlarms = async (alarm: chrome.alarms.Alarm): Promise<void> => {
 }
 
 async function tick() {
-  const pet = await getPet({ sync: false })
+  const pet = await getPet()
   const { popout } = await chrome.storage.local.get("popout")
   timeToMove -= TICK_TIMEOUT
   timeToSave -= TICK_TIMEOUT
@@ -88,7 +88,7 @@ async function tick() {
     saved = true
   }
 
-  await savePet(pet, { sync: false })
+  await savePet(pet)
 
   for (const tab of activeTabs) {
     chrome.tabs.sendMessage(tab.id, { action: "tick", payload: pet.toJSON() }, handleResp)
@@ -104,6 +104,7 @@ async function tick() {
 
 async function lifecycle() {
   // const activeTabs = await chrome.tabs.query({ active: true, discarded: false })
+  const { popout } = await chrome.storage.local.get("popout")
 
   const activeTabs = await chrome.tabs.query({
     active: true,
@@ -124,8 +125,9 @@ async function lifecycle() {
   for (const tab of [...inactiveTabs, ...inactiveWindowTabs]) {
     chrome.tabs.sendMessage(tab.id, { action: "destroy" }, handleResp)
   }
+
   for (const tab of activeTabs) {
-    chrome.tabs.sendMessage(tab.id, { action: "create" }, handleResp)
+    chrome.tabs.sendMessage(tab.id, { action: popout ? "create" : "destroy" }, handleResp)
   }
 }
 

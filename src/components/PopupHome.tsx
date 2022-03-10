@@ -30,7 +30,7 @@ export const PopupHome: React.FC = () => {
           e.preventDefault()
           const newPet = new PetData({ name: "Jimmy", sprite: "chicken-test" })
           savePet(newPet, { sync: true })
-          savePet(newPet, { sync: false })
+          savePet(newPet)
         }}
       >
         Create
