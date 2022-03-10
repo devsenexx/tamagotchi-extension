@@ -42,7 +42,7 @@ export const DebugInfo = withTick(({ frame, delta }) => {
             onClick={(e) => {
               e.preventDefault()
               // pet.resetStats()
-              const newPet = new PetData({ ...pet, background: "bg1" })
+              const newPet = new PetData({ ...pet, background: "bg-1" })
               savePet(newPet, { sync: true })
               savePet(newPet, { sync: false })
             }}

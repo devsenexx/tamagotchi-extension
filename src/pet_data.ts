@@ -243,6 +243,12 @@ export default class PetData {
       },
     }
   }
+
+  get status(): string {
+    if (this.state.sleeping) return "Zzz"
+    if (this.state.eating) return "Eating"
+    if (this.state.needsCleaning) return "Dirty"
+  }
 }
 
 function fullStats(): PetStats {

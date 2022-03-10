@@ -8,7 +8,7 @@ export function usePetFromTick(): PetData | undefined {
 
   const messageHandler = React.useCallback(
     ({ action, payload }: any, _, sendResponse: any) => {
-      if (action === "move") {
+      if (["move", "data", "tick"].includes(action)) {
         setPet(new PetData(payload))
       }
       sendResponse({ action: "ack" })

@@ -77,7 +77,9 @@ export const ContentScriptHome: React.FC = () => {
             // marginTop: -2,
           }}
         >
-          <Typography variant="caption">{pet.name}</Typography>
+          <Typography variant="caption" noWrap>
+            {pet.name} {pet.status ? `(${pet.status})` : null}
+          </Typography>
           {/* <br />
         {JSON.stringify({ x: left, y: 0, direction: faceDirection })} */}
         </Box>
