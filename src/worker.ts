@@ -57,8 +57,8 @@ async function tick() {
 
   if (!pet) {
     if (!popout) {
-      timeToMove -= MOVE_PERIOD
-      timeToSave -= SAVE_PERIOD
+      timeToMove = MOVE_PERIOD
+      timeToSave = SAVE_PERIOD
     }
     return
   }
@@ -74,7 +74,7 @@ async function tick() {
   pet.tick()
 
   if (timeToMove <= 0 && popout) {
-    if (!pet.isDoingSomething) {
+    if (pet.canMove) {
       await pet.moveRandomly(DOCUMENT_FRAME_SIZE)
       timeToMove = MOVE_PERIOD
       moved = true

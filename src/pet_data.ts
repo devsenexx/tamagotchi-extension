@@ -130,6 +130,8 @@ export default class PetData {
       ...this.toJSON(),
       statData: this.statData,
       timeEst: this.timeEst,
+      isDoingSomething: this.isDoingSomething,
+      canMove: this.canMove,
     }
   }
 
@@ -155,6 +157,9 @@ export default class PetData {
 
   get isDoingSomething(): boolean {
     return this.state.sleeping || this.state.eating || this.state.usingBladder
+  }
+  get canMove(): boolean {
+    return !this.isDoingSomething
   }
 
   private updateStats() {

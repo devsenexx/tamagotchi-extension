@@ -15,6 +15,7 @@ export function usePetSprite({
   height,
   faceDirection,
   padding,
+  useBackground,
 }: {
   canvas: HTMLCanvasElement
   pet: PetData
@@ -22,13 +23,19 @@ export function usePetSprite({
   height: number
   padding: number
   faceDirection: "left" | "right"
+  useBackground?: boolean
 }) {
   const { frame } = useTick()
 
-  const sliceNum = React.useMemo(
-    () => (Math.floor(frame / SPEED) % MOD) % FRAME_COUNT,
-    [frame % MOD]
+  const petAnimFrame = React.useMemo(() => Math.floor(frame / SPEED) % FRAME_COUNT, [frame])
+  const bgAnimFrame = React.useMemo(
+    () => {
+      return Math.floor(((frame / SPEED) * 2) % (width * 2)) - width
+    }, //  / (SPEED * 2)
+    [frame]
   )
+
+  // console.debug({petAnimFrame,bgAnimFrame})
 
   const draw = React.useCallback(() => {
     if (!canvas) {
@@ -38,11 +45,34 @@ export function usePetSprite({
     // setup canvas
     ctx.imageSmoothingEnabled = false
     ctx.clearRect(0, 0, width, height)
-
+    if (useBackground && pet.backgroundImage) {
+      ctx.drawImage(
+        pet.backgroundImage,
+        0, // source x
+        0, // source y
+        BG_SIZE, // source w
+        BG_SIZE, // source h
+        0, // dest x
+        0, // dest y
+        width, // dest w
+        height // dest h
+      )
+      ctx.drawImage(
+        pet.backgroundImage,
+        0, // source x
+        BG_SIZE, // source y
+        BG_SIZE, // source w
+        BG_SIZE, // source h
+        bgAnimFrame, // dest x
+        0, // dest y
+        width, // dest w
+        height // dest h
+      )
+    }
     if (pet.spriteImage) {
       ctx.drawImage(
         pet.spriteImage,
-        sliceNum * SPRITE_SIZE, // source x
+        petAnimFrame * SPRITE_SIZE, // source x
         0, // source y
         SPRITE_SIZE, // source w
         SPRITE_SIZE, // source h
@@ -52,7 +82,7 @@ export function usePetSprite({
         height - padding * 2 // dest h
       )
     }
-  }, [sliceNum])
+  }, [petAnimFrame, bgAnimFrame])
 
   React.useLayoutEffect(() => {
     if (!canvas) {

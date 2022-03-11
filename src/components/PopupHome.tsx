@@ -72,6 +72,7 @@ export const PopupHome: React.FC = () => {
             height={POPUP_FRAME_SIZE}
             padding={16}
             faceDirection="left"
+            useBackground={true}
           />
         </Grid>
         <Grid item>

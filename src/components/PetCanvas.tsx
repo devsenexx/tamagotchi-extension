@@ -13,15 +13,27 @@ interface PetCanvasProps
   height: number
   faceDirection: "left" | "right"
   padding: number
+  useBackground?: boolean
 }
 
 export const PetCanvas = withTick(
   React.forwardRef<HTMLCanvasElement, PetCanvasProps>(
-    ({ pet, frame, delta, width, height, faceDirection, padding, ...props }, ref) => {
+    (
+      { pet, frame, delta, width, height, faceDirection, padding, useBackground, ...props },
+      ref
+    ) => {
       const innerRef = React.useRef(ref)
       const canvasRef = useCombinedRefs(ref, innerRef)
 
-      usePetSprite({ canvas: canvasRef.current, pet, width, height, faceDirection, padding })
+      usePetSprite({
+        canvas: canvasRef.current,
+        pet,
+        width,
+        height,
+        faceDirection,
+        padding,
+        useBackground,
+      })
 
       return (
         <canvas

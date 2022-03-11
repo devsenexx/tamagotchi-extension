@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 import { ContentScriptApp } from "./components/ContentScriptApp"
 import { FRAME_ID } from "./lib/consts"
 import "./lib/pet_hooks"
+import { wake } from "./lib/tick"
 
 // chrome.runtime.onSuspend.addListener(doDestroy)
 
@@ -15,13 +16,6 @@ async function main() {
   if (popout) {
     doInject()
   }
-}
-
-function wake() {
-  setTimeout(() => {
-    chrome.runtime.sendMessage("ping")
-    wake()
-  }, 10000)
 }
 
 function doInject() {

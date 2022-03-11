@@ -35,3 +35,10 @@ export function withTick<T>(
     return <_Component {...props} frame={frame} delta={delta} />
   }
 }
+
+export function wake() {
+  setTimeout(() => {
+    chrome.runtime.sendMessage("ping")
+    wake()
+  }, 10000)
+}
