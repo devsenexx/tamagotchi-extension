@@ -1,5 +1,5 @@
 import React from "react"
-import PetData from "../pet_data"
+import PetData from "../lib/pet_data"
 import { useTick } from "./tick"
 
 const MOD = 500

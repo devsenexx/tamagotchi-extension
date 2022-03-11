@@ -1,7 +1,6 @@
 {
   "name": "playpet-extension",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "https://github.com/playpet/playpet-extension.git",
   "author": "Chen Asraf <chenasrafil@gmail.com>",
   "license": "UNLICENSED",

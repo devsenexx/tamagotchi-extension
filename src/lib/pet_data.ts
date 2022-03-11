@@ -1,6 +1,6 @@
 import clamp from "lodash/clamp"
-import { TICK_TIMEOUT } from "./lib/consts"
-import { Coords } from "./lib/types"
+import { TICK_TIMEOUT } from "./consts"
+import { Coords } from "./types"
 import { getRandomMovement } from "./pet_utils"
 
 export type PetStatName = "hunger" | "energy" | "bladder"

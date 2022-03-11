@@ -9,6 +9,8 @@
     "moduleResolution": "node"
   },
   "files": [
-    "src/index.ts"
+    "src/popup.tsx",
+    "src/content_script.tsx",
+    "src/worker.ts"
   ]
 }

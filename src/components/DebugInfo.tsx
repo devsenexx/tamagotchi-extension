@@ -1,6 +1,6 @@
 import React from "react"
-import PetData from "../pet_data"
-import { savePet } from "../pet_utils"
+import PetData from "../lib/pet_data"
+import { savePet } from "../lib/pet_utils"
 import { usePetPeriodically } from "../lib/pet_hooks"
 import { withTick } from "../lib/tick"
 import Link from "@mui/material/Link"

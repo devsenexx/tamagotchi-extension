@@ -1,7 +1,7 @@
 import React from "react"
 import { usePetSprite } from "../lib/pet_sprite"
 import { WithTick, withTick } from "../lib/tick"
-import PetData from "../pet_data"
+import PetData from "../lib/pet_data"
 import { useCombinedRefs } from "../lib/combined_refs"
 
 interface PetCanvasProps

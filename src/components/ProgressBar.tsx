@@ -26,7 +26,15 @@ export const ProgressBar: React.FC<{
       <Typography variant="caption" textAlign="center" component="p">
         {typeof label === "function" ? label(perc) : label}
       </Typography>
-      <Box sx={{ backgroundColor: bg, height: HEIGHT, borderRadius: 1, position: "relative" }}>
+      <Box
+        sx={{
+          backgroundColor: bg,
+          height: HEIGHT,
+          borderRadius: 1,
+          position: "relative",
+          transition: "all 150ms ease-in-out",
+        }}
+      >
         <Box
           sx={{
             borderRadius: 1,

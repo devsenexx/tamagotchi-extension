@@ -7,8 +7,8 @@ import {
   TICK_TIMEOUT,
   TIMEOUT_IN_MINS,
 } from "./lib/consts"
-import PetData from "./pet_data"
-import { getPet, savePet } from "./pet_utils"
+import PetData from "./lib/pet_data"
+import { getPet, savePet } from "./lib/pet_utils"
 
 chrome.runtime.onInstalled.addListener(async () => {
   console.log("Extension installed!")

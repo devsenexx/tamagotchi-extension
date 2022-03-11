@@ -1,10 +1,9 @@
 import React from "react"
-import { ProgressBar } from "./ProgressBar"
 import Grid from "@mui/material/Grid"
 import { usePetPeriodically } from "../lib/pet_hooks"
 import Button from "@mui/material/Button"
-import { PetState, PetStats } from "../pet_data"
-import { getPet, savePet } from "../pet_utils"
+import { PetState } from "../lib/pet_data"
+import { savePet } from "../lib/pet_utils"
 
 export const Actions = () => {
   const pet = usePetPeriodically()

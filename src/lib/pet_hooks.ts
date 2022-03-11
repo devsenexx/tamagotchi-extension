@@ -1,6 +1,6 @@
 import React from "react"
-import PetData from "../pet_data"
-import { getPet } from "../pet_utils"
+import PetData from "./pet_data"
+import { getPet } from "./pet_utils"
 import { TICK_TIMEOUT } from "./consts"
 
 export function usePetFromTick(): PetData | undefined {
