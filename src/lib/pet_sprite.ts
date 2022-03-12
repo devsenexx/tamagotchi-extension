@@ -27,13 +27,9 @@ export function usePetSprite({
   useBackground?: boolean
 }) {
   const { frame } = useTick()
-  const petAnimFrame = React.useMemo(() => {
-    return Math.floor(frame / SPEED) % PET_FRAME_COUNT
-  }, [frame])
+  const petAnimFrame = React.useMemo(() => Math.floor(frame / SPEED) % PET_FRAME_COUNT, [frame])
   const bgAnimFrame = React.useMemo(
-    () => {
-      return Math.floor(((frame / SPEED) * 2) % (width * 2)) - width
-    }, //  / (SPEED * 2)
+    () => Math.floor(((frame / SPEED) * 2) % (width * 2)) - width,
     [frame]
   )
 
@@ -80,43 +76,4 @@ export function usePetSprite({
     [petAnimFrame, bgAnimFrame]
   )
   useCanvas(ctx, draw, { width, height })
-}
-
-export function useSprite({
-  image,
-  ctx,
-  width,
-  height,
-  padding,
-  frameCount,
-  spriteSize,
-}: {
-  ctx: CanvasRenderingContext2D
-  image: HTMLImageElement
-  width: number
-  height: number
-  padding: number
-  frameCount: number
-  spriteSize: number
-}) {
-  const { frame } = useTick()
-  const objectAnimFrame = React.useMemo(() => Math.floor(frame / SPEED) % frameCount, [frame])
-
-  useCanvas(
-    ctx,
-    (ctx) => {
-      ctx.drawImage(
-        image,
-        objectAnimFrame * spriteSize, // source x
-        0, // source y
-        spriteSize, // source w
-        spriteSize, // source h
-        padding, // dest x
-        padding, // dest y
-        width - padding * 2, // dest w
-        height - padding * 2 // dest h
-      )
-    },
-    { width, height }
-  )
 }

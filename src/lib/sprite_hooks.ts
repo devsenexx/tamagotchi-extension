@@ -37,3 +37,45 @@ export function useCanvas(
     }
   }, [ctx, frame, draw])
 }
+
+
+export function useSprite({
+  image,
+  ctx,
+  width,
+  height,
+  padding,
+  frameCount,
+  spriteSize,
+  speed,
+}: {
+  ctx: CanvasRenderingContext2D
+  image: HTMLImageElement
+  width: number
+  height: number
+  padding: number
+  frameCount: number
+  spriteSize: number
+  speed: number
+}) {
+  const { frame } = useTick()
+  const objectAnimFrame = React.useMemo(() => Math.floor(frame / speed) % frameCount, [frame])
+
+  useCanvas(
+    ctx,
+    (ctx) => {
+      ctx.drawImage(
+        image,
+        objectAnimFrame * spriteSize, // source x
+        0, // source y
+        spriteSize, // source w
+        spriteSize, // source h
+        padding, // dest x
+        padding, // dest y
+        width - padding * 2, // dest w
+        height - padding * 2 // dest h
+      )
+    },
+    { width, height }
+  )
+}

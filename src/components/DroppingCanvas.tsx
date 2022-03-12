@@ -1,8 +1,8 @@
 import React from "react"
-import { usePetSprite, useSprite } from "../lib/pet_sprite"
 import { WithTick, withTick } from "../lib/tick"
-import PetData, { PetObject } from "../lib/pet_data"
+import { PetObject } from "../lib/pet_data"
 import { useCombinedRefs } from "../lib/combined_refs"
+import { useSprite } from "../lib/sprite_hooks"
 
 interface DroppingCanvasProps
   extends WithTick<
@@ -29,6 +29,7 @@ export const DroppingCanvas = withTick(
         width,
         height,
         padding,
+        speed: 40,
       })
 
       return (
