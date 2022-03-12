@@ -1,7 +1,9 @@
 import clamp from "lodash/clamp"
 import { TICK_TIMEOUT } from "./consts"
-import { Coords } from "./types"
+import { Coords, SubType } from "./types"
 import { getRandomMovement } from "./pet_utils"
+import random from "lodash/random"
+import uniqueId from "lodash/uniqueId"
 
 export type PetStatName = "hunger" | "energy" | "bladder"
 export interface PetStat {
@@ -27,6 +29,10 @@ export interface Position extends Coords {
   direction: "left" | "right"
 }
 
+export type PetObject = Coords & {
+  id: string
+}
+
 export default class PetData {
   id: string
   name: string
@@ -34,11 +40,16 @@ export default class PetData {
   background: string
   spriteImage?: HTMLImageElement
   backgroundImage?: HTMLImageElement
-  position: Position = { x: 0, y: 0, direction: "left" }
+  droppingImage?: HTMLImageElement
+  position: Position
 
+  // objects such as droppings, toys, etc...
+  objects: Record<"droppings", Array<Coords & { id: string }>> = {
+    droppings: [],
+  }
   // state & stats
-  state: PetState = emptyState()
-  stats: PetStats = fullStats()
+  state: PetState
+  stats: PetStats
 
   constructor({
     name,
@@ -47,6 +58,7 @@ export default class PetData {
     stats = fullStats(),
     position,
     state,
+    objects,
   }: {
     name: string
     sprite: string
@@ -54,17 +66,19 @@ export default class PetData {
     stats?: PetStats
     position?: Position
     state?: PetState
+    objects?: Record<"droppings", Array<PetObject>>
   }) {
     this.name = name
     this.sprite = sprite
     this.background = background
-    this.stats = stats
 
-    if (position) {
-      this.position = { ...this.position, ...position }
-    }
-    if (state) {
-      this.state = { ...this.state, ...state }
+    this.position = { x: 0, y: 0, direction: "left", ...position }
+    this.stats = { ...fullStats(), ...stats }
+    this.objects = { droppings: [], ...objects }
+    this.state = {
+      ...emptyState(),
+      needsCleaning: this.objects.droppings.length > 0,
+      ...state,
     }
 
     this.initSprites()
@@ -72,44 +86,26 @@ export default class PetData {
 
   private initSprites() {
     if (global.Image !== undefined && chrome.runtime?.id) {
-      if (this.sprite) {
-        this.spriteImage = new Image()
-        this.spriteImage.src = chrome.runtime.getURL(`assets/images/pets/${this.sprite}.png`)
+      this.loadImage("spriteImage", `assets/images/pets/${this.sprite}.png`)
+      this.loadImage("backgroundImage", `assets/images/backgrounds/${this.background}.png`)
+      this.loadImage("droppingImage", "assets/images/sprites/dropping.png")
+    }
+  }
 
-        if (this.spriteImage.src !== "chrome-extension://invalid/") {
-          this.spriteImage.onerror = (e) => {
-            this.spriteImage = undefined
-            console.warn(
-              "error loading sprite",
-              chrome.runtime.getURL(`assets/images/pets/${this.sprite}.png`),
-              e
-            )
-          }
-        } else {
-          this.spriteImage = undefined
-          console.warn(`getURL failed for assets/images/pets/${this.sprite}.png`)
+  loadImage(key: keyof SubType<PetData, HTMLImageElement>, url: string) {
+    if (url) {
+      const self: any = this
+      self[key] = new Image()
+      self[key].src = chrome.runtime.getURL(`${url}`)
+
+      if (self[key].src !== "chrome-extension://invalid/") {
+        self[key].onerror = (e: any) => {
+          self[key] = undefined
+          console.warn("error loading background", chrome.runtime.getURL(url), e)
         }
-      }
-
-      if (this.background) {
-        this.backgroundImage = new Image()
-        this.backgroundImage.src = chrome.runtime.getURL(
-          `assets/images/backgrounds/${this.background}.png`
-        )
-
-        if (this.backgroundImage.src !== "chrome-extension://invalid/") {
-          this.backgroundImage.onerror = (e) => {
-            this.backgroundImage = undefined
-            console.warn(
-              "error loading background",
-              chrome.runtime.getURL(`assets/images/backgrounds/${this.background}.png`),
-              e
-            )
-          }
-        } else {
-          this.backgroundImage = undefined
-          console.warn(`getURL failed for assets/images/backgrounds/${this.background}.png`)
-        }
+      } else {
+        self[key] = undefined
+        console.warn(`getURL failed for ${url}`)
       }
     }
   }
@@ -122,6 +118,7 @@ export default class PetData {
       stats: this.stats,
       state: this.state,
       position: this.position,
+      objects: this.objects,
     }
   }
 
@@ -194,6 +191,7 @@ export default class PetData {
         this.statData[key].onFull?.()
       }
     }
+    this.state.needsCleaning = this.objects.droppings.length > 0
   }
 
   get statKeys(): Array<keyof PetStats> {
@@ -240,10 +238,7 @@ export default class PetData {
         depleteRate: 1 / (HOUR * 4), // 4h to empty
         restoreRate: 1 / (SEC * 6), // 6s to full
         action: this.state.usingBladder ? "restore" : "deplete",
-        onFull: () => {
-          this.state.usingBladder = false
-          this.state.needsCleaning = true
-        },
+        onFull: () => this.createDropping(),
         onEmpty: () => (this.state.usingBladder = true),
       },
     }
@@ -253,6 +248,29 @@ export default class PetData {
     if (this.state.sleeping) return "Zzz"
     if (this.state.eating) return "Eating"
     if (this.state.needsCleaning) return "Dirty"
+  }
+
+  createDropping() {
+    this.state.usingBladder = false
+    this.createObject("droppings", {
+      x: random(0.1, 0.9, true),
+      y: 0,
+    })
+  }
+
+  cleanDroppings() {
+    this.objects.droppings = []
+    this.state.needsCleaning = false
+  }
+
+  createObject<T extends Coords>(key: keyof typeof this.objects, data: T) {
+    this.objects[key].push({
+      id: uniqueId(),
+      ...data,
+    })
+  }
+  removeObject(key: keyof typeof this.objects, id: string) {
+    this.objects[key] = this.objects[key].filter((i) => i.id !== id)
   }
 }
 

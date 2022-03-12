@@ -29,7 +29,6 @@ export const DebugInfo = withTick(({ frame, delta }) => {
               // pet.resetStats()
               const newPet = new PetData({ name: pet.name, sprite: "chicken-test" })
               savePet(newPet, { sync: true })
-              savePet(newPet)
             }}
           >
             New Pet
@@ -44,10 +43,23 @@ export const DebugInfo = withTick(({ frame, delta }) => {
               // pet.resetStats()
               const newPet = new PetData({ ...pet, background: "bg-1" })
               savePet(newPet, { sync: true })
-              savePet(newPet)
             }}
           >
             Update BG
+          </Link>
+        </div>
+        <div>
+          <Link
+            href="#"
+            component="a"
+            onClick={(e) => {
+              e.preventDefault()
+              const newPet = new PetData(pet)
+              newPet.createDropping()
+              savePet(newPet, { sync: true })
+            }}
+          >
+            Create dropping
           </Link>
         </div>
 

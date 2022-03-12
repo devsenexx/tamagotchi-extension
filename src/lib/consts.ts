@@ -1,6 +1,7 @@
 export const FRAME_ID = "__playpet__frame__"
 export const TICK_TIMEOUT = 1000
 export const DOCUMENT_FRAME_SIZE = 72
+export const DROPPINGS_FRAME_SIZE = 32
 export const POPUP_FRAME_SIZE = 128
 
 export const MOVE_PERIOD = 20 * 1000 // 20 secs

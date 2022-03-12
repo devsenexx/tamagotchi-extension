@@ -6,7 +6,8 @@ const MOD = 500
 const SPEED = 40
 const SPRITE_SIZE = 24
 const BG_SIZE = 32
-const FRAME_COUNT = 2
+const PET_FRAME_COUNT = 2
+const DROPPING_FRAME_COUNT = 3
 
 export function usePetSprite({
   canvas,
@@ -27,7 +28,7 @@ export function usePetSprite({
 }) {
   const { frame } = useTick()
 
-  const petAnimFrame = React.useMemo(() => Math.floor(frame / SPEED) % FRAME_COUNT, [frame])
+  const petAnimFrame = React.useMemo(() => Math.floor(frame / SPEED) % PET_FRAME_COUNT, [frame])
   const bgAnimFrame = React.useMemo(
     () => {
       return Math.floor(((frame / SPEED) * 2) % (width * 2)) - width
@@ -83,6 +84,67 @@ export function usePetSprite({
       )
     }
   }, [petAnimFrame, bgAnimFrame])
+
+  React.useLayoutEffect(() => {
+    if (!canvas) {
+      return
+    }
+
+    let animationFrameId: number
+
+    const render = () => {
+      draw()
+      animationFrameId = window.requestAnimationFrame(render)
+    }
+    render()
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId)
+    }
+  }, [canvas, frame])
+}
+
+export function useSprite({
+  image,
+  canvas,
+  width,
+  height,
+  padding,
+  frameCount,
+  spriteSize,
+}: {
+  canvas: HTMLCanvasElement
+  image: HTMLImageElement
+  width: number
+  height: number
+  padding: number
+  frameCount: number
+  spriteSize: number
+}) {
+  const { frame } = useTick()
+
+  const objectAnimFrame = React.useMemo(() => Math.floor(frame / SPEED) % frameCount, [frame])
+
+  const draw = React.useCallback(() => {
+    if (!canvas) {
+      return
+    }
+    const ctx = canvas.getContext("2d")
+    // setup canvas
+    ctx.imageSmoothingEnabled = false
+    ctx.clearRect(0, 0, width, height)
+    ctx.drawImage(
+      image,
+      objectAnimFrame * spriteSize, // source x
+      0, // source y
+      spriteSize, // source w
+      spriteSize, // source h
+      padding, // dest x
+      padding, // dest y
+      width - padding * 2, // dest w
+      height - padding * 2 // dest h
+    )
+  }, [objectAnimFrame])
 
   React.useLayoutEffect(() => {
     if (!canvas) {

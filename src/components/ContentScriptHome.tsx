@@ -1,11 +1,13 @@
 import React from "react"
 import { usePetFromTick } from "../lib/pet_hooks"
 import { PetCanvas } from "./PetCanvas"
+import { DroppingCanvas } from "./DroppingCanvas"
 import rand from "lodash/random"
-import { MOVE_DURATION, DOCUMENT_FRAME_SIZE } from "../lib/consts"
+import { MOVE_DURATION, DOCUMENT_FRAME_SIZE, DROPPINGS_FRAME_SIZE } from "../lib/consts"
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
 import Typography from "@mui/material/Typography"
+import { savePet } from "../lib/pet_utils"
 
 export const ContentScriptHome: React.FC = () => {
   const pet = usePetFromTick()
@@ -35,55 +37,108 @@ export const ContentScriptHome: React.FC = () => {
   }
 
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        width: DOCUMENT_FRAME_SIZE,
-        height: DOCUMENT_FRAME_SIZE,
-        marginTop: 1,
-        top: 0,
-        left,
-        transition: `all ${!freezeAnim ? MOVE_DURATION : 300}ms ease-in-out`,
-        zIndex: 999999999999,
-        "& > :last-child": {
-          transform: "translateY(-10px)",
-          opacity: 0,
-          pointerEvents: "none",
-          transition: "all 150ms ease-in-out",
-        },
-        "&:hover > :last-child": {
-          transform: "translateY(0px)",
-          opacity: 1,
-          pointerEvents: "initial",
-        },
-      }}
-    >
-      <PetCanvas
-        pet={pet}
-        width={DOCUMENT_FRAME_SIZE}
-        height={DOCUMENT_FRAME_SIZE}
-        faceDirection={faceDirection}
-        padding={0}
-      />
-      <Grid container justifyContent="center">
+    <>
+      <Box
+        sx={{
+          position: "fixed",
+          width: DOCUMENT_FRAME_SIZE,
+          height: DOCUMENT_FRAME_SIZE,
+          marginTop: 1,
+          top: 0,
+          left,
+          transition: `all ${!freezeAnim ? MOVE_DURATION : 300}ms ease-in-out`,
+          zIndex: 999999999999,
+          "& > :last-child": {
+            transform: "translateY(-10px)",
+            opacity: 0,
+            pointerEvents: "none",
+            transition: "all 150ms ease-in-out",
+          },
+          "&:hover > :last-child": {
+            transform: "translateY(0px)",
+            opacity: 1,
+            pointerEvents: "initial",
+          },
+        }}
+      >
+        <PetCanvas
+          pet={pet}
+          width={DOCUMENT_FRAME_SIZE}
+          height={DOCUMENT_FRAME_SIZE}
+          faceDirection={faceDirection}
+          padding={0}
+        />
+        <Grid container justifyContent="center">
+          <Box
+            sx={{
+              background: "#00000080",
+              color: "white",
+              textAlign: "center",
+              borderRadius: 1,
+              padding: (theme) => theme.spacing(0, 0.5),
+              cursor: "default",
+            }}
+          >
+            <Typography variant="caption" noWrap>
+              {pet.name} {pet.status ? `(${pet.status})` : null}
+            </Typography>
+          </Box>
+        </Grid>
+      </Box>
+      {pet.objects.droppings.map((drop) => (
         <Box
+          key={"dropping-" + drop.id}
+          onClick={function () {
+            pet.removeObject("droppings", drop.id)
+            savePet(pet, { sync: true })
+          }}
           sx={{
-            background: "#00000080",
-            color: "white",
-            textAlign: "center",
-            borderRadius: 1,
-            padding: (theme) => theme.spacing(0, 0.5),
-            cursor: "default",
-            // marginTop: -2,
+            position: "fixed",
+            width: DROPPINGS_FRAME_SIZE,
+            height: DROPPINGS_FRAME_SIZE,
+            marginTop: 1,
+            top: 40,
+            left: (drop.x * 100).toFixed(2) + "%",
+            zIndex: 999999999999,
+            cursor: "pointer",
+            "& > :last-child": {
+              transform: "translateY(-10px)",
+              opacity: 0,
+              pointerEvents: "none",
+              transition: "all 150ms ease-in-out",
+            },
+            "&:hover > :last-child": {
+              transform: "translateY(0px)",
+              opacity: 1,
+              pointerEvents: "initial",
+            },
           }}
         >
-          <Typography variant="caption" noWrap>
-            {pet.name} {pet.status ? `(${pet.status})` : null}
-          </Typography>
-          {/* <br />
-        {JSON.stringify({ x: left, y: 0, direction: faceDirection })} */}
+          <DroppingCanvas
+            dropping={drop}
+            image={pet.droppingImage}
+            width={DROPPINGS_FRAME_SIZE}
+            height={DROPPINGS_FRAME_SIZE}
+            padding={0}
+          />
+          <Grid container justifyContent="center">
+            <Box
+              sx={{
+                background: "#00000080",
+                color: "white",
+                textAlign: "center",
+                borderRadius: 1,
+                padding: (theme) => theme.spacing(0, 0.5),
+                cursor: "default",
+              }}
+            >
+              <Typography variant="caption" noWrap>
+                Click to clean
+              </Typography>
+            </Box>
+          </Grid>
         </Box>
-      </Grid>
-    </Box>
+      ))}
+    </>
   )
 }

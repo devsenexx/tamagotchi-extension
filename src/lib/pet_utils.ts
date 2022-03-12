@@ -20,7 +20,10 @@ export async function getPet({
 }
 
 export async function savePet(pet: PetData, { sync }: { sync?: boolean } = {}): Promise<void> {
-  return chrome.storage[sync ? "sync" : "local"].set({ currentPet: pet })
+  await chrome.storage.local.set({ currentPet: pet })
+  if (sync) {
+    await chrome.storage.sync.set({ currentPet: pet })
+  }
 }
 
 export function getRandomMovement({

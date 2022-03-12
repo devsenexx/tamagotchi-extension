@@ -4,6 +4,7 @@ const path = require("path")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const WorkboxWebpackPlugin = require("workbox-webpack-plugin")
 const CopyWebpackPlugin = require("copy-webpack-plugin")
+const CleanTerminalWebpackPlugin = require("clean-terminal-webpack-plugin")
 
 const isProduction = process.env.NODE_ENV == "production"
 
@@ -24,6 +25,12 @@ const config = {
 
     new CopyWebpackPlugin({
       patterns: [{ from: "public", to: "." }],
+    }),
+
+    new CleanTerminalWebpackPlugin({
+      message: "Building...",
+      onlyInWatchMode: true,
+      beforeCompile: true,
     }),
 
     // Add your plugins here

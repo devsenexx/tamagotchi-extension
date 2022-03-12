@@ -2,7 +2,7 @@ import React from "react"
 import Grid from "@mui/material/Grid"
 import { usePetPeriodically } from "../lib/pet_hooks"
 import Button from "@mui/material/Button"
-import { PetState } from "../lib/pet_data"
+import PetData, { PetState } from "../lib/pet_data"
 import { savePet } from "../lib/pet_utils"
 
 export const Actions = () => {
@@ -14,10 +14,12 @@ export const Actions = () => {
 
   function updateStat(
     key: keyof PetState,
-    state: boolean
+    state: boolean,
+    beforeSave?: (pet: PetData) => void
   ): React.MouseEventHandler<HTMLButtonElement> {
     return async () => {
       pet.state[key] = state
+      beforeSave?.(pet)
       await savePet(pet)
     }
   }
@@ -85,7 +87,7 @@ export const Actions = () => {
             },
           ]}
           disabled={!pet.state.needsCleaning}
-          onClick={updateStat("needsCleaning", false)}
+          onClick={updateStat("needsCleaning", false, (pet) => pet.cleanDroppings())}
         >
           Clean
         </Button>
