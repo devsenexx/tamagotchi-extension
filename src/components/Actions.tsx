@@ -13,15 +13,21 @@ export const Actions = () => {
   }
 
   function updateStat(
-    key: keyof PetState,
-    state: boolean,
+    state: PetState | undefined,
+    newValue: boolean | undefined,
     beforeSave?: (pet: PetData) => void
   ): React.MouseEventHandler<HTMLButtonElement> {
-    return async () => {
-      pet.state[key] = state
-      beforeSave?.(pet)
-      await savePet(pet)
+    return () => {
+      if (state) {
+        pet.state = newValue ? state : "idle"
+      }
+      return withSave(beforeSave)
     }
+  }
+
+  async function withSave(beforeSave?: (pet: PetData) => void) {
+    beforeSave?.(pet)
+    return savePet(pet)
   }
 
   const defaultButtonStyle = {
@@ -46,7 +52,7 @@ export const Actions = () => {
             },
           ]}
           onClick={updateStat("eating", true)}
-          disabled={pet.state.eating || pet.state.sleeping || pet.stats.hunger > 0.7}
+          disabled={pet.isDoingSomething || pet.stats.hunger > 0.7}
         >
           Feed
         </Button>
@@ -66,9 +72,9 @@ export const Actions = () => {
               },
             },
           ]}
-          onClick={updateStat("sleeping", !pet.state.sleeping)}
+          onClick={updateStat("sleeping", pet.state !== "sleeping")}
         >
-          {!pet.state.sleeping ? "Sleep" : "Wake"}
+          {pet.state !== "sleeping" ? "Sleep" : "Wake"}
         </Button>
       </Grid>
       <Grid item xs={4}>
@@ -86,8 +92,8 @@ export const Actions = () => {
               },
             },
           ]}
-          disabled={!pet.state.needsCleaning}
-          onClick={updateStat("needsCleaning", false, (pet) => pet.cleanDroppings())}
+          disabled={!pet.hasDroppings}
+          onClick={() => withSave((pet) => pet.cleanDroppings())}
         >
           Clean
         </Button>

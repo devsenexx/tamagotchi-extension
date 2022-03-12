@@ -12,12 +12,8 @@ export interface PetStat {
   onFull?(): void
   onEmpty?(): void
 }
-export interface PetState {
-  sleeping: boolean
-  eating: boolean
-  usingBladder: boolean
-  needsCleaning: boolean
-}
+export type PetState = "idle" | "sleeping" | "moving" | "eating" | "dropping"
+
 export type PetStats = Record<PetStatName, number>
 const SEC = 1000 / TICK_TIMEOUT
 const MIN = SEC * 60
@@ -74,11 +70,7 @@ export default class PetData {
     this.position = { x: 0, y: 0, direction: "left", ...position }
     this.stats = { ...fullStats(), ...stats }
     this.objects = { droppings: [], ...objects }
-    this.state = {
-      ...emptyState(),
-      needsCleaning: this.objects.droppings.length > 0,
-      ...state,
-    }
+    this.state = state ?? "idle"
 
     this.initSprites()
   }
@@ -152,10 +144,14 @@ export default class PetData {
   }
 
   get isDoingSomething(): boolean {
-    return this.state.sleeping || this.state.eating || this.state.usingBladder
+    return this.state !== "idle"
   }
   get canMove(): boolean {
     return !this.isDoingSomething
+  }
+
+  get hasDroppings(): boolean {
+    return this.objects.droppings.length > 0
   }
 
   private updateStats() {
@@ -190,7 +186,6 @@ export default class PetData {
         this.statData[key].onFull?.()
       }
     }
-    this.state.needsCleaning = this.objects.droppings.length > 0
   }
 
   get statKeys(): Array<keyof PetStats> {
@@ -216,35 +211,42 @@ export default class PetData {
       hunger: {
         depleteRate: 1 / (HOUR * 6), // 6h to empty
         restoreRate: 1 / (SEC * 30), // 30s to full
-        action: this.state.eating ? "restore" : "deplete",
-        onFull: () => (this.state.eating = false),
+        action: this.state === "eating" ? "restore" : "deplete",
+        onFull: () => (this.state = "idle"),
         // onEmpty: () => this.state.sleeping = true,
       },
       energy: {
         depleteRate: 1 / (HOUR * 18), // 18h to empty
         restoreRate: 1 / (HOUR * 6), // 6h to full
-        action: this.state.sleeping ? "restore" : "deplete",
-        onFull: () => (this.state.sleeping = false),
-        onEmpty: () => (this.state.sleeping = true),
+        action: this.state === "sleeping" ? "restore" : "deplete",
+        onFull: () => (this.state = "idle"),
+        onEmpty: () => (this.state = "sleeping"),
       },
       bladder: {
         depleteRate: 1 / (HOUR * 4), // 4h to empty
         restoreRate: 1 / (SEC * 6), // 6s to full
-        action: this.state.usingBladder ? "restore" : "deplete",
+        action: this.state === "dropping" ? "restore" : "deplete",
         onFull: () => this.createDropping(),
-        onEmpty: () => (this.state.usingBladder = true),
+        onEmpty: () => (this.state = "dropping"),
       },
     }
   }
 
   get status(): string {
-    if (this.state.sleeping) return "Zzz"
-    if (this.state.eating) return "Eating"
-    if (this.state.needsCleaning) return "Dirty"
+    switch (this.state) {
+      case "sleeping":
+        return "Zzz"
+      case "eating":
+        return "Eating"
+      default:
+        if (this.hasDroppings) {
+          return "Dirty"
+        }
+    }
   }
 
   createDropping() {
-    this.state.usingBladder = false
+    this.state = "idle"
     this.createObject("droppings", {
       x: this.position.x,
       y: 0,
@@ -253,7 +255,6 @@ export default class PetData {
 
   cleanDroppings() {
     this.objects.droppings = []
-    this.state.needsCleaning = false
   }
 
   createObject<T extends Coords>(key: keyof typeof this.objects, data: T) {
@@ -291,13 +292,5 @@ function fullStats(): PetStats {
     hunger: 1,
     energy: 1,
     bladder: 1,
-  }
-}
-function emptyState(): PetState {
-  return {
-    sleeping: false,
-    eating: false,
-    usingBladder: false,
-    needsCleaning: false,
   }
 }

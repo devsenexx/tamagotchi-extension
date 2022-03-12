@@ -6,6 +6,7 @@ import {
   SAVE_PERIOD_MINS,
   TICK_TIMEOUT,
   TIMEOUT_IN_MINS,
+  MOVE_DURATION,
 } from "./lib/consts"
 import PetData from "./lib/pet_data"
 import { getPet, savePet } from "./lib/pet_utils"
@@ -26,6 +27,7 @@ chrome.alarms.create("lifecycle-tick", {
   periodInMinutes: TIMEOUT_IN_MINS / 4,
 })
 
+let timeToIdle = 0
 let timeToMove = MOVE_PERIOD
 let timeToSave = SAVE_PERIOD
 function handleResp() {
@@ -51,7 +53,8 @@ async function tick() {
   const { popout } = await chrome.storage.local.get("popout")
   timeToMove -= TICK_TIMEOUT
   timeToSave -= TICK_TIMEOUT
-  console.log("tick", { timeToMove, timeToSave, curPet: pet, popout })
+  timeToIdle -= TICK_TIMEOUT
+  console.log("tick", { timeToMove, timeToSave, timeToIdle, curPet: pet, popout })
   let moved = false
   let saved = false
 
@@ -76,9 +79,15 @@ async function tick() {
   if (timeToMove <= 0 && popout) {
     if (pet.canMove) {
       await pet.moveRandomly(DOCUMENT_FRAME_SIZE)
+      pet.state = "moving"
       timeToMove = MOVE_PERIOD
+      timeToIdle = MOVE_DURATION
       moved = true
     }
+  }
+  if (timeToIdle <= 0 && pet.state === "moving") {
+    pet.state = "idle"
+    timeToIdle = MOVE_DURATION
   }
 
   if (timeToSave <= 0) {
