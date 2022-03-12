@@ -2,7 +2,7 @@ import React from "react"
 import { usePetFromTick } from "../lib/pet_hooks"
 import { PetCanvas } from "./PetCanvas"
 import { DroppingCanvas } from "./DroppingCanvas"
-import rand from "lodash/random"
+import random from "lodash/random"
 import { MOVE_DURATION, DOCUMENT_FRAME_SIZE, DROPPINGS_FRAME_SIZE } from "../lib/consts"
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
@@ -11,7 +11,7 @@ import { savePet } from "../lib/pet_utils"
 
 export const ContentScriptHome: React.FC = () => {
   const pet = usePetFromTick()
-  const [left, setLeft] = React.useState(rand(window.innerWidth - DOCUMENT_FRAME_SIZE))
+  const [left, setLeft] = React.useState(random(0.1, 0.9))
   const [faceDirection, setDirection] = React.useState<"left" | "right">("left")
   const [freezeAnim, setFreezeAnim] = React.useState(true)
 
@@ -45,7 +45,7 @@ export const ContentScriptHome: React.FC = () => {
           height: DOCUMENT_FRAME_SIZE,
           marginTop: 1,
           top: 0,
-          left,
+          left: (left * 100).toFixed(2) + "%",
           transition: `all ${!freezeAnim ? MOVE_DURATION : 300}ms ease-in-out`,
           zIndex: 999999999999,
           "& > :last-child": {

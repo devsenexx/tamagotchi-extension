@@ -25,30 +25,3 @@ export async function savePet(pet: PetData, { sync }: { sync?: boolean } = {}): 
     await chrome.storage.sync.set({ currentPet: pet })
   }
 }
-
-export function getRandomMovement({
-  x,
-  frameSize,
-  faceDirection,
-  max,
-}: {
-  x: number
-  frameSize: number
-  faceDirection: "left" | "right"
-  max: number
-}) {
-  const MOVE_MAX = 90
-  const absMoveAmount = rand(MOVE_MAX)
-
-  let actualMoveAmount = faceDirection === "left" ? -absMoveAmount : absMoveAmount
-  let newDirection = faceDirection
-
-  if (x + actualMoveAmount > max || x + actualMoveAmount < 0) {
-    actualMoveAmount *= -1
-    newDirection = faceDirection === "left" ? "right" : "left"
-  }
-
-  const actualX = clamp(x + actualMoveAmount, 0, max)
-
-  return { x: actualX, direction: newDirection }
-}

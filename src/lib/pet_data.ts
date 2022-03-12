@@ -1,7 +1,6 @@
 import clamp from "lodash/clamp"
 import { TICK_TIMEOUT } from "./consts"
 import { Coords, SubType } from "./types"
-import { getRandomMovement } from "./pet_utils"
 import random from "lodash/random"
 import uniqueId from "lodash/uniqueId"
 
@@ -199,13 +198,7 @@ export default class PetData {
   }
 
   async moveRandomly(frameSize: number) {
-    const { docWidth } = await chrome.storage.local.get("docWidth")
-    const { x, direction } = getRandomMovement({
-      frameSize,
-      x: this.position.x,
-      faceDirection: this.position.direction,
-      max: (docWidth ?? 800) - frameSize,
-    })
+    const { x, direction } = this.getRandomMovement()
 
     this.moveTo({ x: x, direction: direction })
   }
@@ -253,7 +246,7 @@ export default class PetData {
   createDropping() {
     this.state.usingBladder = false
     this.createObject("droppings", {
-      x: random(0.1, 0.9, true),
+      x: this.position.x,
       y: 0,
     })
   }
@@ -271,6 +264,25 @@ export default class PetData {
   }
   removeObject(key: keyof typeof this.objects, id: string) {
     this.objects[key] = this.objects[key].filter((i) => i.id !== id)
+  }
+
+  getRandomMovement() {
+    const MOVE_MAX = 0.05
+    const X_MIN = 0.05
+    const X_MAX = 1 - X_MIN
+    const absMoveAmount = random(MOVE_MAX, true)
+
+    let actualMoveAmount = this.position.direction === "left" ? -absMoveAmount : absMoveAmount
+    let newDirection = this.position.direction
+
+    if (this.position.x + actualMoveAmount > X_MAX || this.position.x + actualMoveAmount < X_MIN) {
+      actualMoveAmount *= -1
+      newDirection = this.position.direction === "left" ? "right" : "left"
+    }
+
+    const actualX = clamp(this.position.x + actualMoveAmount, X_MIN, X_MAX)
+
+    return { x: actualX, direction: newDirection }
   }
 }
 
