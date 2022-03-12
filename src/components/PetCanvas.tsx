@@ -14,12 +14,24 @@ interface PetCanvasProps
   faceDirection: "left" | "right"
   padding: number
   useBackground?: boolean
+  lockState?: boolean
 }
 
 export const PetCanvas = withTick(
   React.forwardRef<HTMLCanvasElement, PetCanvasProps>(
     (
-      { pet, frame, delta, width, height, faceDirection, padding, useBackground, ...props },
+      {
+        pet,
+        frame,
+        delta,
+        width,
+        height,
+        faceDirection,
+        padding,
+        useBackground,
+        lockState,
+        ...props
+      },
       ref
     ) => {
       const innerRef = React.useRef(ref)
@@ -33,6 +45,7 @@ export const PetCanvas = withTick(
         faceDirection,
         padding,
         useBackground,
+        lockState,
       })
 
       return (

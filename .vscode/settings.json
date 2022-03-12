@@ -1,5 +1,8 @@
 {
-    "cSpell.words": [
-        "playpet"
-    ]
+  "editor.rulers": [
+    100
+  ],
+  "cSpell.words": [
+    "playpet"
+  ]
 }

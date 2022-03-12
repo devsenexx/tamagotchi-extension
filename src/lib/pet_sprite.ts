@@ -1,5 +1,5 @@
 import React from "react"
-import PetData from "../lib/pet_data"
+import PetData, { PetState } from "../lib/pet_data"
 import { useTick } from "./tick"
 import { useCanvas } from "./sprite_hooks"
 
@@ -17,6 +17,7 @@ export function usePetSprite({
   height,
   padding,
   useBackground,
+  lockState,
 }: {
   ctx: CanvasRenderingContext2D
   pet: PetData
@@ -25,9 +26,26 @@ export function usePetSprite({
   padding: number
   faceDirection: "left" | "right"
   useBackground?: boolean
+  lockState?: boolean
 }) {
   const { frame } = useTick()
-  const petAnimFrame = React.useMemo(() => Math.floor(frame / SPEED) % PET_FRAME_COUNT, [frame])
+  const frameCounts: Partial<Record<PetState, number>> = {
+    idle: 2,
+    moving: 9,
+  }
+  const frameSpeeds: Partial<Record<PetState, number>> = {
+    idle: 40,
+    moving: 2,
+  }
+  const frameSlices: Partial<Record<PetState, number>> = {
+    idle: 0,
+    moving: 1,
+  }
+  const animKey: PetState = lockState ? "idle" : frameCounts[pet.state] ? pet.state : "idle"
+  const petAnimFrame = React.useMemo(
+    () => Math.floor(frame / frameSpeeds[animKey]) % frameCounts[animKey],
+    [frame, animKey]
+  )
   const bgAnimFrame = React.useMemo(
     () => Math.floor(((frame / SPEED) * 2) % (width * 2)) - width,
     [frame]
@@ -36,17 +54,7 @@ export function usePetSprite({
   const draw = React.useCallback(
     (ctx: CanvasRenderingContext2D): void => {
       if (useBackground && pet.backgroundImage) {
-        ctx.drawImage(
-          pet.backgroundImage,
-          0,
-          0,
-          BG_SIZE,
-          BG_SIZE,
-          0,
-          0,
-          width,
-          height // dest h
-        )
+        ctx.drawImage(pet.backgroundImage, 0, 0, BG_SIZE, BG_SIZE, 0, 0, width, height)
         ctx.drawImage(
           pet.backgroundImage,
           0,
@@ -56,14 +64,14 @@ export function usePetSprite({
           bgAnimFrame,
           0,
           width,
-          height // dest h
+          height
         )
       }
       if (pet.spriteImage) {
         ctx.drawImage(
           pet.spriteImage,
           petAnimFrame * SPRITE_SIZE,
-          0,
+          frameSlices[animKey] * SPRITE_SIZE,
           SPRITE_SIZE,
           SPRITE_SIZE,
           padding,
@@ -73,7 +81,7 @@ export function usePetSprite({
         )
       }
     },
-    [petAnimFrame, bgAnimFrame]
+    [petAnimFrame, bgAnimFrame, animKey]
   )
   useCanvas(ctx, draw, { width, height })
 }
