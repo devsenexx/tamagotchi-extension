@@ -1,6 +1,7 @@
 import React from "react"
 import PetData from "../lib/pet_data"
 import { useTick } from "./tick"
+import { useCanvas } from "./sprite_hooks"
 
 const MOD = 500
 const SPEED = 40
@@ -10,15 +11,14 @@ const PET_FRAME_COUNT = 2
 const DROPPING_FRAME_COUNT = 3
 
 export function usePetSprite({
-  canvas,
+  ctx,
   pet,
   width,
   height,
-  faceDirection,
   padding,
   useBackground,
 }: {
-  canvas: HTMLCanvasElement
+  ctx: CanvasRenderingContext2D
   pet: PetData
   width: number
   height: number
@@ -27,8 +27,9 @@ export function usePetSprite({
   useBackground?: boolean
 }) {
   const { frame } = useTick()
-
-  const petAnimFrame = React.useMemo(() => Math.floor(frame / SPEED) % PET_FRAME_COUNT, [frame])
+  const petAnimFrame = React.useMemo(() => {
+    return Math.floor(frame / SPEED) % PET_FRAME_COUNT
+  }, [frame])
   const bgAnimFrame = React.useMemo(
     () => {
       return Math.floor(((frame / SPEED) * 2) % (width * 2)) - width
@@ -36,84 +37,61 @@ export function usePetSprite({
     [frame]
   )
 
-  // console.debug({petAnimFrame,bgAnimFrame})
-
-  const draw = React.useCallback(() => {
-    if (!canvas) {
-      return
-    }
-    const ctx = canvas.getContext("2d")
-    // setup canvas
-    ctx.imageSmoothingEnabled = false
-    ctx.clearRect(0, 0, width, height)
-    if (useBackground && pet.backgroundImage) {
-      ctx.drawImage(
-        pet.backgroundImage,
-        0, // source x
-        0, // source y
-        BG_SIZE, // source w
-        BG_SIZE, // source h
-        0, // dest x
-        0, // dest y
-        width, // dest w
-        height // dest h
-      )
-      ctx.drawImage(
-        pet.backgroundImage,
-        0, // source x
-        BG_SIZE, // source y
-        BG_SIZE, // source w
-        BG_SIZE, // source h
-        bgAnimFrame, // dest x
-        0, // dest y
-        width, // dest w
-        height // dest h
-      )
-    }
-    if (pet.spriteImage) {
-      ctx.drawImage(
-        pet.spriteImage,
-        petAnimFrame * SPRITE_SIZE, // source x
-        0, // source y
-        SPRITE_SIZE, // source w
-        SPRITE_SIZE, // source h
-        padding, // dest x
-        padding, // dest y
-        width - padding * 2, // dest w
-        height - padding * 2 // dest h
-      )
-    }
-  }, [petAnimFrame, bgAnimFrame])
-
-  React.useLayoutEffect(() => {
-    if (!canvas) {
-      return
-    }
-
-    let animationFrameId: number
-
-    const render = () => {
-      draw()
-      animationFrameId = window.requestAnimationFrame(render)
-    }
-    render()
-
-    return () => {
-      window.cancelAnimationFrame(animationFrameId)
-    }
-  }, [canvas, frame])
+  const draw = React.useCallback(
+    (ctx: CanvasRenderingContext2D): void => {
+      if (useBackground && pet.backgroundImage) {
+        ctx.drawImage(
+          pet.backgroundImage,
+          0,
+          0,
+          BG_SIZE,
+          BG_SIZE,
+          0,
+          0,
+          width,
+          height // dest h
+        )
+        ctx.drawImage(
+          pet.backgroundImage,
+          0,
+          BG_SIZE,
+          BG_SIZE,
+          BG_SIZE,
+          bgAnimFrame,
+          0,
+          width,
+          height // dest h
+        )
+      }
+      if (pet.spriteImage) {
+        ctx.drawImage(
+          pet.spriteImage,
+          petAnimFrame * SPRITE_SIZE,
+          0,
+          SPRITE_SIZE,
+          SPRITE_SIZE,
+          padding,
+          padding,
+          width - padding * 2,
+          height - padding * 2
+        )
+      }
+    },
+    [petAnimFrame, bgAnimFrame]
+  )
+  useCanvas(ctx, draw, { width, height })
 }
 
 export function useSprite({
   image,
-  canvas,
+  ctx,
   width,
   height,
   padding,
   frameCount,
   spriteSize,
 }: {
-  canvas: HTMLCanvasElement
+  ctx: CanvasRenderingContext2D
   image: HTMLImageElement
   width: number
   height: number
@@ -122,45 +100,23 @@ export function useSprite({
   spriteSize: number
 }) {
   const { frame } = useTick()
-
   const objectAnimFrame = React.useMemo(() => Math.floor(frame / SPEED) % frameCount, [frame])
 
-  const draw = React.useCallback(() => {
-    if (!canvas) {
-      return
-    }
-    const ctx = canvas.getContext("2d")
-    // setup canvas
-    ctx.imageSmoothingEnabled = false
-    ctx.clearRect(0, 0, width, height)
-    ctx.drawImage(
-      image,
-      objectAnimFrame * spriteSize, // source x
-      0, // source y
-      spriteSize, // source w
-      spriteSize, // source h
-      padding, // dest x
-      padding, // dest y
-      width - padding * 2, // dest w
-      height - padding * 2 // dest h
-    )
-  }, [objectAnimFrame])
-
-  React.useLayoutEffect(() => {
-    if (!canvas) {
-      return
-    }
-
-    let animationFrameId: number
-
-    const render = () => {
-      draw()
-      animationFrameId = window.requestAnimationFrame(render)
-    }
-    render()
-
-    return () => {
-      window.cancelAnimationFrame(animationFrameId)
-    }
-  }, [canvas, frame])
+  useCanvas(
+    ctx,
+    (ctx) => {
+      ctx.drawImage(
+        image,
+        objectAnimFrame * spriteSize, // source x
+        0, // source y
+        spriteSize, // source w
+        spriteSize, // source h
+        padding, // dest x
+        padding, // dest y
+        width - padding * 2, // dest w
+        height - padding * 2 // dest h
+      )
+    },
+    { width, height }
+  )
 }

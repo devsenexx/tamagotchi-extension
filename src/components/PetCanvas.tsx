@@ -26,7 +26,7 @@ export const PetCanvas = withTick(
       const canvasRef = useCombinedRefs(ref, innerRef)
 
       usePetSprite({
-        canvas: canvasRef.current,
+        ctx: canvasRef.current?.getContext("2d"),
         pet,
         width,
         height,

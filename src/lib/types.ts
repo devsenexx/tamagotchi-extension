@@ -10,3 +10,8 @@ export type FilterFlags<Base, Condition> = {
 export type AllowedNames<Base, Condition> = FilterFlags<Base, Condition>[keyof Base]
 
 export type SubType<Base, Condition> = Pick<Base, AllowedNames<Base, Condition>>
+
+export interface Size {
+  width: number
+  height: number
+}

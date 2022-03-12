@@ -22,7 +22,7 @@ export const DroppingCanvas = withTick(
       const canvasRef = useCombinedRefs(ref, innerRef)
 
       useSprite({
-        canvas: canvasRef.current,
+        ctx: canvasRef.current?.getContext("2d"),
         image: image,
         frameCount: 3,
         spriteSize: 16,
