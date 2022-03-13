@@ -195,6 +195,7 @@ export default class PetData {
   }
 
   moveTo(newPosition: Partial<Position>) {
+    console.log("Moving to:", newPosition)
     this.position = { ...this.position, ...newPosition }
   }
 

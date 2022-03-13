@@ -8,12 +8,18 @@ import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
 import Typography from "@mui/material/Typography"
 import { savePet } from "../lib/pet_utils"
+import { Position } from "../lib/pet_data"
+import { Coords } from "../lib/types"
+import { addPositions, scalePosition, subtractPositions } from "../lib/position"
 
 export const ContentScriptHome: React.FC = () => {
   const pet = usePetFromTick()
   const [left, setLeft] = React.useState(random(0.1, 0.9))
   const [faceDirection, setDirection] = React.useState<"left" | "right">("left")
   const [freezeAnim, setFreezeAnim] = React.useState(true)
+  const [grabbing, setGrabbing] = React.useState(false)
+  const [grabOffset, setGrabOffset] = React.useState<Coords>({ x: 0, y: 0 })
+  const [mousePos, setMousePos] = React.useState<Coords>({ x: 0, y: 0 })
 
   React.useEffect(() => {
     if (pet && freezeAnim) {
@@ -42,17 +48,40 @@ export const ContentScriptHome: React.FC = () => {
   return (
     <>
       <Box
+        onMouseDownCapture={(e) => {
+          setGrabbing(true)
+          const mousePos = { x: e.clientX, y: e.clientY }
+          const objPos = { x: e.currentTarget.offsetLeft, y: e.currentTarget.offsetTop }
+          setGrabOffset(subtractPositions(mousePos, objPos))
+        }}
+        onMouseUpCapture={() => {
+          setGrabbing(false)
+          pet.moveTo(
+            scalePosition(subtractPositions(mousePos, grabOffset), {
+              x: 1 / window.innerWidth,
+              y: 1 / window.innerHeight,
+            })
+          )
+          savePet(pet, { sync: true })
+        }}
+        onMouseMoveCapture={(e) => setMousePos({ x: e.clientX, y: e.clientY })}
         sx={{
           position: "fixed",
           width: DOCUMENT_FRAME_SIZE,
           height: DOCUMENT_FRAME_SIZE,
           marginTop: 1,
-          top: 0,
-          left: (left * 100).toFixed(2) + "%",
-          transition: `all ${
-            !freezeAnim ? MOVE_DURATION : 10
+          top: grabbing
+            ? subtractPositions(mousePos, grabOffset).y + "px"
+            : (pet.position.y * 100).toFixed(2) + "%",
+          left: grabbing
+            ? subtractPositions(mousePos, grabOffset).x + "px"
+            : (left * 100).toFixed(2) + "%",
+          transition: `transform 150ms ease-in-out, left ${
+            !freezeAnim && !grabbing ? MOVE_DURATION : 0
           }ms cubic-bezier(0.52, 0.25, 0.79, 1.02)`,
           zIndex: 999999999999,
+          transform: grabbing ? "scale(1.05)" : "scale(1)",
+          cursor: !grabbing ? "grab" : "grabbing",
           "& > :last-child": {
             transform: "translateY(-10px)",
             opacity: 0,
