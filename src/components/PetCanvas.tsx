@@ -1,7 +1,7 @@
 import React from "react"
 import { usePetSprite } from "../lib/pet_sprite"
 import { WithTick, withTick } from "../lib/tick"
-import PetData from "../lib/pet_data"
+import PetData, { PetState } from "../lib/pet_data"
 import { useCombinedRefs } from "../lib/combined_refs"
 
 interface PetCanvasProps
@@ -14,7 +14,7 @@ interface PetCanvasProps
   faceDirection: "left" | "right"
   padding: number
   useBackground?: boolean
-  lockState?: boolean
+  lockState?: PetState
 }
 
 export const PetCanvas = withTick(

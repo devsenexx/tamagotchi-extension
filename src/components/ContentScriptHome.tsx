@@ -16,6 +16,13 @@ export const ContentScriptHome: React.FC = () => {
   const [freezeAnim, setFreezeAnim] = React.useState(true)
 
   React.useEffect(() => {
+    if (pet && freezeAnim) {
+      const id = setTimeout(() => setFreezeAnim(false), 100)
+      return () => clearTimeout(id)
+    }
+  }, [pet, freezeAnim])
+
+  React.useEffect(() => {
     if (!pet) {
       return
     }
@@ -25,10 +32,6 @@ export const ContentScriptHome: React.FC = () => {
 
     if (pet.position.x !== left) {
       setLeft(pet.position.x)
-      if (freezeAnim) {
-        const id = setTimeout(() => setFreezeAnim(false), 300)
-        return () => clearTimeout(id)
-      }
     }
   }, [pet?.position])
 
@@ -46,7 +49,9 @@ export const ContentScriptHome: React.FC = () => {
           marginTop: 1,
           top: 0,
           left: (left * 100).toFixed(2) + "%",
-          transition: `all ${!freezeAnim ? MOVE_DURATION : 300}ms ease-in-out`,
+          transition: `all ${
+            !freezeAnim ? MOVE_DURATION : 10
+          }ms cubic-bezier(0.52, 0.25, 0.79, 1.02)`,
           zIndex: 999999999999,
           "& > :last-child": {
             transform: "translateY(-10px)",

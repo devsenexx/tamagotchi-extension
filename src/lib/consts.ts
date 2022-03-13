@@ -10,3 +10,8 @@ export const MOVE_PERIOD_MINS = MOVE_PERIOD / 60000
 export const SAVE_PERIOD = 60 * 1000
 export const SAVE_PERIOD_MINS = SAVE_PERIOD / 60000
 export const TIMEOUT_IN_MINS = TICK_TIMEOUT / 60000
+
+export const SEC = 1000 / TICK_TIMEOUT
+export const MIN = SEC * 60 // in secs
+export const HOUR = MIN * 60 //in secs
+export const DAY = HOUR * 24 // in secs

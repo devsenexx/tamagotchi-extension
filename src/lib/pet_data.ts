@@ -1,5 +1,5 @@
 import clamp from "lodash/clamp"
-import { TICK_TIMEOUT } from "./consts"
+import { HOUR, SEC } from "./consts"
 import { Coords, SubType } from "./types"
 import random from "lodash/random"
 import uniqueId from "lodash/uniqueId"
@@ -15,10 +15,6 @@ export interface PetStat {
 export type PetState = "idle" | "sleeping" | "moving" | "eating" | "dropping"
 
 export type PetStats = Record<PetStatName, number>
-const SEC = 1000 / TICK_TIMEOUT
-const MIN = SEC * 60
-const HOUR = MIN * 60 //in secs
-const DAY = HOUR * 24 // in secs
 
 export interface Position extends Coords {
   direction: "left" | "right"
@@ -268,10 +264,11 @@ export default class PetData {
   }
 
   getRandomMovement() {
-    const MOVE_MAX = 0.05
+    const MOVE_MIN = 0.03
+    const MOVE_MAX = 0.06
     const X_MIN = 0.05
     const X_MAX = 1 - X_MIN
-    const absMoveAmount = random(MOVE_MAX, true)
+    const absMoveAmount = random(MOVE_MIN, MOVE_MAX, true)
 
     let actualMoveAmount = this.position.direction === "left" ? -absMoveAmount : absMoveAmount
     let newDirection = this.position.direction

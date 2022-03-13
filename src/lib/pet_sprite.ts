@@ -10,14 +10,17 @@ const BG_SIZE = 32
 const frameCounts: Partial<Record<PetState, number>> = {
   idle: 2,
   moving: 9,
+  sleeping: 1,
 }
 const frameSpeeds: Partial<Record<PetState, number>> = {
   idle: 40,
-  moving: 2,
+  moving: 5,
+  sleeping: 1,
 }
-const frameSlices: Partial<Record<PetState, number>> = {
+const frameRows: Partial<Record<PetState, number>> = {
   idle: 0,
   moving: 1,
+  sleeping: 2,
 }
 
 export function usePetSprite({
@@ -36,10 +39,10 @@ export function usePetSprite({
   padding: number
   faceDirection: "left" | "right"
   useBackground?: boolean
-  lockState?: boolean
+  lockState?: PetState
 }) {
   const { frame } = useTick()
-  const animKey: PetState = lockState ? "idle" : frameCounts[pet.state] ? pet.state : "idle"
+  const animKey: PetState = lockState ? lockState : frameCounts[pet.state] ? pet.state : "idle"
   const petAnimFrame = React.useMemo(
     () => Math.floor(frame / frameSpeeds[animKey]) % frameCounts[animKey],
     [frame, animKey]
@@ -69,7 +72,7 @@ export function usePetSprite({
         ctx.drawImage(
           pet.spriteImage,
           petAnimFrame * SPRITE_WIDTH,
-          frameSlices[animKey] * SPRITE_WIDTH,
+          frameRows[animKey] * SPRITE_WIDTH,
           SPRITE_WIDTH,
           SPRITE_HEIGHT,
           padding,

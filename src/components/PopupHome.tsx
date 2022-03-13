@@ -72,7 +72,7 @@ export const PopupHome: React.FC = () => {
             padding={16}
             faceDirection="left"
             useBackground={true}
-            lockState
+            lockState={pet.state === "moving" ? "idle" : undefined}
           />
         </Grid>
         <Grid item>
