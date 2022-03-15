@@ -136,7 +136,6 @@ export const ContentScriptHome: React.FC = () => {
           width={DOCUMENT_FRAME_SIZE}
           height={DOCUMENT_FRAME_SIZE}
           faceDirection={faceDirection}
-          padding={0}
         />
         <Grid container justifyContent="center">
           <Box

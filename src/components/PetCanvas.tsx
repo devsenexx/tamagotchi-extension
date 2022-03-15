@@ -12,12 +12,13 @@ interface PetCanvasProps
   width: number
   height: number
   faceDirection: "left" | "right"
-  padding: number
+  padding?: number
   useBackground?: boolean
   lockState?: PetState
 }
 
 export const PetCanvas = withTick(
+  // eslint-disable-next-line react/display-name
   React.forwardRef<HTMLCanvasElement, PetCanvasProps>(
     (
       {
@@ -27,7 +28,7 @@ export const PetCanvas = withTick(
         width,
         height,
         faceDirection,
-        padding,
+        padding = 0,
         useBackground,
         lockState,
         ...props

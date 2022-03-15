@@ -48,7 +48,6 @@ export const PopupHome: React.FC = () => {
             pet={pet}
             width={POPUP_FRAME_SIZE}
             height={POPUP_FRAME_SIZE}
-            padding={16}
             faceDirection="left"
             useBackground={true}
             lockState={pet.state === "moving" ? "idle" : undefined}

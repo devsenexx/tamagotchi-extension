@@ -21,6 +21,7 @@ export const ProgressBar: React.FC<{
   ...props
 }) => {
   const perc = value * 100
+
   return (
     <Box sx={{ width: "100%" }}>
       <Typography variant="caption" textAlign="center" component="p">
@@ -32,18 +33,22 @@ export const ProgressBar: React.FC<{
           height: HEIGHT,
           borderRadius: 1,
           position: "relative",
-          transition: "all 150ms ease-in-out",
         }}
       >
         <Box
-          sx={{
-            borderRadius: 1,
-            width: `${perc.toFixed(2)}%`,
-            backgroundColor: fg,
-            height: HEIGHT,
-            color: textColor,
-            overflow: "visible",
-          }}
+          sx={[
+            {
+              transition: "all 300ms ease-in-out",
+            },
+            {
+              borderRadius: 1,
+              width: `${perc.toFixed(2)}%`,
+              backgroundColor: fg,
+              height: HEIGHT,
+              color: textColor,
+              overflow: "visible",
+            },
+          ]}
         />
         {showPerc ? (
           <Typography

@@ -3,24 +3,27 @@ import PetData, { PetState } from "../lib/pet_data"
 import { useTick } from "./tick"
 import { useCanvas } from "./sprite_hooks"
 
-const SPRITE_WIDTH = 24
-const SPRITE_HEIGHT = 24
+const SPRITE_WIDTH = 32
+const SPRITE_HEIGHT = 32
 const BG_SIZE = 32
 
 const frameCounts: Partial<Record<PetState, number>> = {
   idle: 2,
   moving: 9,
   sleeping: 1,
+  eating: 9,
 }
 const frameSpeeds: Partial<Record<PetState, number>> = {
   idle: 40,
   moving: 5,
   sleeping: 1,
+  eating: 3,
 }
 const frameRows: Partial<Record<PetState, number>> = {
   idle: 0,
   moving: 1,
   sleeping: 2,
+  eating: 3,
 }
 
 export function usePetSprite({
@@ -48,7 +51,7 @@ export function usePetSprite({
     [frame, animKey]
   )
   const bgAnimFrame = React.useMemo(
-    () => Math.floor(((frame / frameSpeeds.idle!) * 2) % (width * 2)) - width,
+    () => Math.floor(((frame / frameSpeeds.idle) * 2) % (width * 2)) - width,
     [frame]
   )
 
