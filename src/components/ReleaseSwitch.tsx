@@ -10,7 +10,7 @@ export interface ReleaseSwitchProps extends BaseProps {
 }
 
 export const ReleaseSwitch: React.FC<ReleaseSwitchProps> = (props) => {
-  const [popout, setPopout] = useStorageKey<boolean>("popout")
+  const [popout = false, setPopout] = useStorageKey<boolean>("popout")
   return (
     <Box {...props}>
       <FormControlLabel

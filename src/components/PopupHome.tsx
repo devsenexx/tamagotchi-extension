@@ -60,13 +60,15 @@ export const PopupHome: React.FC = () => {
         <Grid item>
           <Actions />
         </Grid>
+        <Grid item>
+          <ReleaseSwitch sx={{ marginTop: 2 }} />
+        </Grid>
         {debug ? (
           <Grid item sx={{ maxWidth: "100% !important" }}>
             <DebugInfo />
           </Grid>
         ) : null}
-      </Grid>{" "}
-      <ReleaseSwitch sx={{ marginTop: 2 }} />
+      </Grid>
     </Box>
   )
 }

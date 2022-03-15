@@ -14,7 +14,7 @@ import { addPositions, scalePosition, subtractPositions } from "../lib/position"
 
 export const ContentScriptHome: React.FC = () => {
   const pet = usePetFromTick()
-  const [left, setLeft] = React.useState(random(0.1, 0.9))
+  const [pos, setPos] = React.useState<Coords>({ x: 0, y: 0 })
   const [faceDirection, setDirection] = React.useState<"left" | "right">("left")
   const [freezeAnim, setFreezeAnim] = React.useState(true)
   const [grabbing, setGrabbing] = React.useState(false)
@@ -36,10 +36,60 @@ export const ContentScriptHome: React.FC = () => {
       setDirection(pet.position.direction)
     }
 
-    if (pet.position.x !== left) {
-      setLeft(pet.position.x)
+    if (pet.position.x !== pos.x || pet.position.y !== pos.y) {
+      setPos(pet.position)
     }
   }, [pet?.position])
+
+  const onMouseMove = React.useCallback(
+    (e: MouseEvent) => {
+      const mPos = { x: e.clientX, y: e.clientY }
+      setMousePos(mPos)
+    },
+    [grabbing, mousePos]
+  )
+  const onMouseDown = React.useCallback(
+    (e: React.MouseEvent<HTMLElement>) => {
+      setGrabbing(true)
+      const mousePos = { x: e.clientX, y: e.clientY }
+      const objPos = { x: e.currentTarget.offsetLeft, y: e.currentTarget.offsetTop }
+      const offset = subtractPositions(mousePos, objPos)
+      const relPos = subtractPositions(mousePos, grabOffset)
+      const scaledPos = scalePosition(relPos, {
+        x: 1 / window.innerWidth,
+        y: 1 / window.innerHeight,
+      })
+      setGrabOffset(offset)
+      setMousePos(mousePos)
+      setPos(scaledPos)
+    },
+    [grabbing]
+  )
+  const onMouseUp = React.useCallback(
+    (e: MouseEvent) => {
+      setGrabbing(false)
+      const relPos = subtractPositions(mousePos, grabOffset)
+      const scaledPos = scalePosition(relPos, {
+        x: 1 / window.innerWidth,
+        y: 1 / window.innerHeight,
+      })
+      setPos(scaledPos)
+      pet.moveTo(scaledPos)
+      savePet(pet, { sync: true })
+    },
+    [grabbing, mousePos, grabOffset]
+  )
+
+  React.useEffect(() => {
+    if (grabbing) {
+      document.addEventListener("mousemove", onMouseMove)
+      document.addEventListener("mouseup", onMouseUp)
+      return () => {
+        document.removeEventListener("mousemove", onMouseMove)
+        document.removeEventListener("mouseup", onMouseUp)
+      }
+    }
+  }, [grabbing, mousePos, grabOffset])
 
   if (!pet) {
     return null
@@ -48,40 +98,26 @@ export const ContentScriptHome: React.FC = () => {
   return (
     <>
       <Box
-        onMouseDownCapture={(e) => {
-          setGrabbing(true)
-          const mousePos = { x: e.clientX, y: e.clientY }
-          const objPos = { x: e.currentTarget.offsetLeft, y: e.currentTarget.offsetTop }
-          setGrabOffset(subtractPositions(mousePos, objPos))
+        onMouseDownCapture={onMouseDown}
+        style={{
+          top: grabbing
+            ? subtractPositions(mousePos, grabOffset).y + "px"
+            : (pos.y * 100).toFixed(5) + "%",
+          left: grabbing
+            ? subtractPositions(mousePos, grabOffset).x + "px"
+            : (pos.x * 100).toFixed(5) + "%",
+          transition: `transform 150ms ease-in-out, left ${
+            !freezeAnim && !grabbing ? MOVE_DURATION : 0
+          }ms cubic-bezier(0.52, 0.25, 0.79, 1.02)`,
+          transform: grabbing ? "scale(1.05)" : "scale(1)",
+          cursor: !grabbing ? "grab" : "grabbing",
         }}
-        onMouseUpCapture={() => {
-          setGrabbing(false)
-          pet.moveTo(
-            scalePosition(subtractPositions(mousePos, grabOffset), {
-              x: 1 / window.innerWidth,
-              y: 1 / window.innerHeight,
-            })
-          )
-          savePet(pet, { sync: true })
-        }}
-        onMouseMoveCapture={(e) => setMousePos({ x: e.clientX, y: e.clientY })}
         sx={{
           position: "fixed",
           width: DOCUMENT_FRAME_SIZE,
           height: DOCUMENT_FRAME_SIZE,
           marginTop: 1,
-          top: grabbing
-            ? subtractPositions(mousePos, grabOffset).y + "px"
-            : (pet.position.y * 100).toFixed(2) + "%",
-          left: grabbing
-            ? subtractPositions(mousePos, grabOffset).x + "px"
-            : (left * 100).toFixed(2) + "%",
-          transition: `transform 150ms ease-in-out, left ${
-            !freezeAnim && !grabbing ? MOVE_DURATION : 0
-          }ms cubic-bezier(0.52, 0.25, 0.79, 1.02)`,
           zIndex: 999999999999,
-          transform: grabbing ? "scale(1.05)" : "scale(1)",
-          cursor: !grabbing ? "grab" : "grabbing",
           "& > :last-child": {
             transform: "translateY(-10px)",
             opacity: 0,

@@ -222,9 +222,18 @@ export default class PetData {
       bladder: {
         depleteRate: 1 / (HOUR * 4), // 4h to empty
         restoreRate: 1 / (SEC * 6), // 6s to full
-        action: this.state === "dropping" ? "restore" : "deplete",
+        action:
+          this.stats.bladder <= 0 && this.state === "sleeping"
+            ? "freeze"
+            : this.state === "dropping"
+            ? "restore"
+            : "deplete",
         onFull: () => this.createDropping(),
-        onEmpty: () => (this.state = "dropping"),
+        onEmpty: () => {
+          if (this.state !== "sleeping") {
+            this.state = "dropping"
+          }
+        },
       },
     }
   }
