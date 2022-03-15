@@ -1,6 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { ContentScriptApp } from "./components/ContentScriptApp"
+import { ContentScriptApp } from "./components/apps/ContentScriptApp"
 import { FRAME_ID } from "./lib/consts"
 import "./lib/pet_hooks"
 import { wake } from "./lib/tick"
@@ -36,7 +36,7 @@ function doDestroy() {
   document.body.removeChild(root)
 }
 
-chrome.runtime.onMessage.addListener(async ({ action, payload }) => {
+chrome.runtime.onMessage.addListener(async ({ action }) => {
   // console.log("cs message", { action })
   if (action === "create" && !getFrameEl()) {
     doInject()

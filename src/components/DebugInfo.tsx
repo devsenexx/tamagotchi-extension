@@ -16,7 +16,7 @@ export const DebugInfo = withTick(({ frame, delta }) => {
         <Grid container>
           <Grid item xs={6}>
             <Action
-              label="New Pet"
+              label="Reset Pet"
               onClick={() => {
                 const newPet = new PetData({
                   name: pet.name,
@@ -34,6 +34,14 @@ export const DebugInfo = withTick(({ frame, delta }) => {
                 const newPet = new PetData(pet)
                 newPet.moveTo({ x: 0.05, y: 0.05 })
                 savePet(newPet, { sync: true })
+              }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Action
+              label="Delete Pet"
+              onClick={() => {
+                savePet(null as any, { sync: true })
               }}
             />
           </Grid>

@@ -1,6 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { OptionsApp } from "./components/OptionsApp"
+import { OptionsApp } from "./components/apps/OptionsApp"
 import { wake } from "./lib/tick"
 
 document.addEventListener("DOMContentLoaded", async () => {

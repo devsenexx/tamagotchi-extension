@@ -1,16 +1,14 @@
 import React from "react"
-import { usePetFromTick } from "../lib/pet_hooks"
-import { PetCanvas } from "./PetCanvas"
-import { DroppingCanvas } from "./DroppingCanvas"
-import random from "lodash/random"
-import { MOVE_DURATION, DOCUMENT_FRAME_SIZE, DROPPINGS_FRAME_SIZE } from "../lib/consts"
+import { usePetFromTick } from "../../lib/pet_hooks"
+import { PetCanvas } from "../PetCanvas"
+import { DroppingCanvas } from "../DroppingCanvas"
+import { MOVE_DURATION, DOCUMENT_FRAME_SIZE, DROPPINGS_FRAME_SIZE } from "../../lib/consts"
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
 import Typography from "@mui/material/Typography"
-import { savePet } from "../lib/pet_utils"
-import { Position } from "../lib/pet_data"
-import { Coords } from "../lib/types"
-import { addPositions, scalePosition, subtractPositions } from "../lib/position"
+import { savePet } from "../../lib/pet_utils"
+import { Coords } from "../../lib/types"
+import { scalePosition, subtractPositions } from "../../lib/position"
 
 export const ContentScriptHome: React.FC = () => {
   const pet = usePetFromTick()
@@ -65,20 +63,17 @@ export const ContentScriptHome: React.FC = () => {
     },
     [grabbing]
   )
-  const onMouseUp = React.useCallback(
-    (e: MouseEvent) => {
-      setGrabbing(false)
-      const relPos = subtractPositions(mousePos, grabOffset)
-      const scaledPos = scalePosition(relPos, {
-        x: 1 / window.innerWidth,
-        y: 1 / window.innerHeight,
-      })
-      setPos(scaledPos)
-      pet.moveTo(scaledPos)
-      savePet(pet, { sync: true })
-    },
-    [grabbing, mousePos, grabOffset]
-  )
+  const onMouseUp = React.useCallback(() => {
+    setGrabbing(false)
+    const relPos = subtractPositions(mousePos, grabOffset)
+    const scaledPos = scalePosition(relPos, {
+      x: 1 / window.innerWidth,
+      y: 1 / window.innerHeight,
+    })
+    setPos(scaledPos)
+    pet.moveTo(scaledPos)
+    savePet(pet, { sync: true })
+  }, [grabbing, mousePos, grabOffset])
 
   React.useEffect(() => {
     if (grabbing) {

@@ -1,40 +1,23 @@
 import React from "react"
-import { usePetPeriodically } from "../lib/pet_hooks"
-import { PetCanvas } from "./PetCanvas"
+import { usePetPeriodically } from "../../lib/pet_hooks"
+import { PetCanvas } from "../PetCanvas"
 import Box from "@mui/material/Box"
 import Grid from "@mui/material/Grid"
-import Typography from "@mui/material/Typography"
-import { StatBars } from "./StatBars"
-import { DebugInfo } from "./DebugInfo"
-import Switch from "@mui/material/Switch"
-import Link from "@mui/material/Link"
-import { FormControlLabel } from "@mui/material"
-import { savePet } from "../lib/pet_utils"
-import PetData from "../lib/pet_data"
-import { useStorageKey } from "../lib/use_storage"
-import { Actions } from "./Actions"
-import { POPUP_FRAME_SIZE } from "../lib/consts"
-import { PetHeader } from "./PetHeader"
-import { ReleaseSwitch } from "./ReleaseSwitch"
+import { StatBars } from "../StatBars"
+import { DebugInfo } from "../DebugInfo"
+import { useStorageKey } from "../../lib/use_storage"
+import { Actions } from "../Actions"
+import { POPUP_FRAME_SIZE } from "../../lib/consts"
+import { PetHeader } from "../PetHeader"
+import { ReleaseSwitch } from "../ReleaseSwitch"
+import { CreatePetView } from "./CreatePetView"
 
 export const PopupHome: React.FC = () => {
   const pet = usePetPeriodically()
   const [debug = false] = useStorageKey<boolean>("debug")
-  const [popout = false, setPopout] = useStorageKey<boolean>("popout")
 
   if (!pet) {
-    return (
-      <Link
-        href="#"
-        onClick={(e) => {
-          e.preventDefault()
-          const newPet = new PetData({ name: "Jimmy", sprite: "chicken-test" })
-          savePet(newPet, { sync: true })
-        }}
-      >
-        Create
-      </Link>
-    )
+    return <CreatePetView />
   }
 
   return (

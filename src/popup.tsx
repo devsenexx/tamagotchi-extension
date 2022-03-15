@@ -1,6 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { PopupApp } from "./components/PopupApp"
+import { PopupApp } from "./components/apps/PopupApp"
 import { wake } from "./lib/tick"
 
 document.addEventListener("DOMContentLoaded", async () => {

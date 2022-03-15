@@ -6,11 +6,10 @@
     "target": "es5",
     "allowJs": true,
     "jsx": "react",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "resolveJsonModule": true
   },
-  "files": [
-    "src/popup.tsx",
-    "src/content_script.tsx",
-    "src/worker.ts"
+  "include": [
+    "src/**/*"
   ]
 }

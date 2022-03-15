@@ -1,13 +1,12 @@
 import React from "react"
-import { withTick } from "../lib/tick"
 import CssBaseline from "@mui/material/CssBaseline"
-import { PopupHome } from "./PopupHome"
+import { PopupHome } from "../pages/PopupHome"
 
-export const PopupApp: React.FC = withTick(({ frame, delta }) => {
+export const PopupApp: React.FC = () => {
   return (
     <div>
       <CssBaseline />
       <PopupHome />
     </div>
   )
-})
+}
