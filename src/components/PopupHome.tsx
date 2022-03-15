@@ -11,16 +11,15 @@ import Link from "@mui/material/Link"
 import { FormControlLabel } from "@mui/material"
 import { savePet } from "../lib/pet_utils"
 import PetData from "../lib/pet_data"
+import { useStorageKey } from "../lib/use_storage"
 import { Actions } from "./Actions"
 import { POPUP_FRAME_SIZE } from "../lib/consts"
+import { PetHeader } from "./PetHeader"
 
 export const PopupHome: React.FC = () => {
   const pet = usePetPeriodically()
-  const [popout, setPopout] = React.useState(false)
-
-  React.useEffect(() => {
-    chrome.storage.local.get("popout").then(({ popout }) => setPopout(popout))
-  }, [])
+  const [debug = false] = useStorageKey<boolean>("debug")
+  const [popout = false, setPopout] = useStorageKey<boolean>("popout")
 
   if (!pet) {
     return (
@@ -41,28 +40,7 @@ export const PopupHome: React.FC = () => {
     <Box sx={{ padding: (theme) => theme.spacing(2) }}>
       <Grid container alignItems="stretch" direction="column" spacing={1}>
         <Grid item>
-          <Typography variant="h4" textAlign="center">
-            {pet.name}
-
-            <div>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={popout}
-                    onChange={async (e, checked) => {
-                      chrome.storage.local.set({ popout: checked })
-                      const tabs = await chrome.tabs.query({})
-                      for (const tab of tabs) {
-                        chrome.tabs.sendMessage(tab.id, { action: "popout", payload: checked })
-                      }
-                      setPopout(checked)
-                    }}
-                  />
-                }
-                label="Pop Out"
-              />
-            </div>
-          </Typography>
+          <PetHeader />
         </Grid>
         <Grid item sx={{ textAlign: "center" }}>
           <PetCanvas
@@ -81,9 +59,11 @@ export const PopupHome: React.FC = () => {
         <Grid item>
           <Actions />
         </Grid>
-        <Grid item sx={{ maxWidth: "100% !important" }}>
-          <DebugInfo />
-        </Grid>
+        {debug ? (
+          <Grid item sx={{ maxWidth: "100% !important" }}>
+            <DebugInfo />
+          </Grid>
+        ) : null}
       </Grid>
     </Box>
   )

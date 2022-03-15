@@ -9,7 +9,8 @@
     "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "gen:component": "npx simple-scaffold@latest -t scaffolds/component -s false -o src/components"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.179",
@@ -17,10 +18,14 @@
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.13",
     "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.15.0",
+    "@typescript-eslint/parser": "^5.15.0",
     "@webpack-cli/generators": "^2.4.2",
     "chrome-url-loader": "^1.2.0",
     "clean-terminal-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^10.2.4",
+    "eslint": "^8.11.0",
+    "eslint-plugin-react": "^7.29.4",
     "html-webpack-plugin": "^5.5.0",
     "prettier": "^2.5.1",
     "ts-loader": "^9.2.7",
@@ -32,6 +37,7 @@
   "dependencies": {
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.5.1",
     "@mui/material": "^5.5.0",
     "lodash": "^4.17.21",
     "react": "^17.0.2",

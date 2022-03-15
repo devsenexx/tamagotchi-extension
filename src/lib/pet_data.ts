@@ -267,8 +267,8 @@ export default class PetData {
   getRandomMovement() {
     const MOVE_MIN = 0.03
     const MOVE_MAX = 0.06
-    const X_MIN = 0.05
-    const X_MAX = 1 - X_MIN
+    const X_MIN = 0
+    const X_MAX = 0.98
     const absMoveAmount = random(MOVE_MIN, MOVE_MAX, true)
 
     let actualMoveAmount = this.position.direction === "left" ? -absMoveAmount : absMoveAmount

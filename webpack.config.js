@@ -13,6 +13,7 @@ const config = {
     worker: "./src/worker.ts",
     popup: "./src/popup.tsx",
     content_script: "./src/content_script.tsx",
+    options: "./src/options.tsx",
   },
   output: {
     path: path.resolve(__dirname, "dist"),

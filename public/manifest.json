@@ -1,7 +1,7 @@
 {
   "name": "PlayPet",
   "description": "Get your own virtual pet companion for your browser!",
-  "version": "1.0",
+  "version": "0.0.1",
   "manifest_version": 3,
   "background": {
     "service_worker": "worker.js",
@@ -14,10 +14,12 @@
   "action": {
     "default_popup": "popup.html"
   },
+  "options_page": "options.html",
   "content_scripts": [
     {
       "matches": [
-        "*://*/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": [
         "content_script.js"

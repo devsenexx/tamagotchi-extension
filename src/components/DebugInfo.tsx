@@ -7,14 +7,6 @@ import Link from "@mui/material/Link"
 
 export const DebugInfo = withTick(({ frame, delta }) => {
   const pet = usePetPeriodically()
-  const [docWidth, setDocWidth] = React.useState(800)
-
-  React.useEffect(() => {
-    const id = setInterval(() => {
-      chrome.storage.local.get("docWidth").then(({ docWidth }) => setDocWidth(docWidth))
-    })
-    return () => clearInterval(id)
-  }, [docWidth])
 
   return (
     <details>
@@ -62,6 +54,20 @@ export const DebugInfo = withTick(({ frame, delta }) => {
             Create dropping
           </Link>
         </div>
+        <div>
+          <Link
+            href="#"
+            component="a"
+            onClick={(e) => {
+              e.preventDefault()
+              const newPet = new PetData(pet)
+              newPet.moveTo({ x: 0.05, y: 0.05 })
+              savePet(newPet, { sync: true })
+            }}
+          >
+            Reset Position
+          </Link>
+        </div>
 
         {pet?.statKeys.map((k) => (
           <div key={k}>
@@ -74,7 +80,7 @@ export const DebugInfo = withTick(({ frame, delta }) => {
         </pre>
 
         <pre>
-          <code>{JSON.stringify({ frame, delta, docWidth }, undefined, 1)}</code>
+          <code>{JSON.stringify({ frame, delta }, undefined, 1)}</code>
         </pre>
       </div>
     </details>
