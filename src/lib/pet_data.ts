@@ -2,7 +2,7 @@ import clamp from "lodash/clamp"
 import { HOUR, SEC } from "./consts"
 import { Coords, SubType } from "./types"
 import random from "lodash/random"
-import uniqueId from "lodash/uniqueId"
+import { uuid } from "../lib/general_utils"
 
 export type PetStatName = "hunger" | "energy" | "bladder"
 export interface PetStat {
@@ -253,14 +253,15 @@ export default class PetData {
   cleanDroppings() {
     this.objects.droppings = []
   }
-
   createObject<T extends Coords>(key: keyof typeof this.objects, data: T) {
     this.objects[key].push({
-      id: uniqueId(),
+      id: uuid(),
       ...data,
     })
   }
+
   removeObject(key: keyof typeof this.objects, id: string) {
+    console.log("removing id", id, "from", key)
     this.objects[key] = this.objects[key].filter((i) => i.id !== id)
   }
 

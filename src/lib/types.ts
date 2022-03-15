@@ -1,3 +1,5 @@
+import { SxProps, Theme } from "@mui/material"
+
 export interface Coords {
   x: number
   y: number
@@ -14,4 +16,8 @@ export type SubType<Base, Condition> = Pick<Base, AllowedNames<Base, Condition>>
 export interface Size {
   width: number
   height: number
+}
+
+export interface BaseProps {
+  sx?: SxProps<Theme>
 }

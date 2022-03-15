@@ -15,6 +15,7 @@ import { useStorageKey } from "../lib/use_storage"
 import { Actions } from "./Actions"
 import { POPUP_FRAME_SIZE } from "../lib/consts"
 import { PetHeader } from "./PetHeader"
+import { ReleaseSwitch } from "./ReleaseSwitch"
 
 export const PopupHome: React.FC = () => {
   const pet = usePetPeriodically()
@@ -64,7 +65,8 @@ export const PopupHome: React.FC = () => {
             <DebugInfo />
           </Grid>
         ) : null}
-      </Grid>
+      </Grid>{" "}
+      <ReleaseSwitch sx={{ marginTop: 2 }} />
     </Box>
   )
 }
