@@ -18,15 +18,17 @@ export function useCanvas(
     draw(ctx)
   }, [ctx, frame, draw])
 
-  React.useLayoutEffect(() => {
-    if (!ctx) {
-      return
-    }
+  useAnimationFrame(doDraw)
+}
 
+export function useAnimationFrame(cb: () => void) {
+  const { frame } = useTick()
+
+  React.useLayoutEffect(() => {
     let animationFrameId: number
 
     const render = () => {
-      doDraw()
+      cb()
       animationFrameId = window.requestAnimationFrame(render)
     }
 
@@ -35,9 +37,8 @@ export function useCanvas(
     return () => {
       window.cancelAnimationFrame(animationFrameId)
     }
-  }, [ctx, frame, draw])
+  }, [frame, cb])
 }
-
 
 export function useSprite({
   image,

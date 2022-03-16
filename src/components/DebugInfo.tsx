@@ -97,20 +97,20 @@ export const DebugInfo = withTick(({ frame, delta }) => {
           </Grid>
           <Grid item xs={6}>
             <Action
-              label="Fill Bladder"
+              label="Empty Bladder"
               onClick={() => {
                 const newPet = new PetData(pet)
-                newPet.stats.bladder = 1
+                newPet.stats.bladder = 0
                 savePet(newPet, { sync: true })
               }}
             />
           </Grid>
           <Grid item xs={6}>
             <Action
-              label="Empty Bladder"
+              label="Fill Bladder"
               onClick={() => {
                 const newPet = new PetData(pet)
-                newPet.stats.bladder = 0
+                newPet.stats.bladder = 1
                 savePet(newPet, { sync: true })
               }}
             />

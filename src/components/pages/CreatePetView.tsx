@@ -22,7 +22,6 @@ export const CreatePetView: React.FC<CreatePetViewProps> = () => {
 
   const onRename = React.useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void => {
-      console.debug("Naming pet:", e.target.value, pet)
       const newPet = new PetData(pet)
       newPet.name = e.target.value
       setPet(newPet)
@@ -59,7 +58,7 @@ export const CreatePetView: React.FC<CreatePetViewProps> = () => {
           />
         </Grid>
         <Grid item>
-          <Button variant="contained" color="primary" onClick={createPet}>
+          <Button variant="contained" color="primary" disabled={!pet.name} onClick={createPet}>
             Create
           </Button>
         </Grid>

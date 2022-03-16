@@ -1,3 +1,4 @@
+import React from "react"
 import { SxProps, Theme } from "@mui/material"
 
 export interface Coords {
@@ -21,3 +22,5 @@ export interface Size {
 export interface BaseProps {
   sx?: SxProps<Theme>
 }
+
+export type HTMLProps<E extends Element> = React.DetailedHTMLProps<React.HTMLAttributes<E>, E>

@@ -2,29 +2,11 @@ import React from "react"
 import PetData, { PetState } from "../lib/pet_data"
 import { useTick } from "./tick"
 import { useCanvas } from "./sprite_hooks"
+import { animations } from "./animation_sets"
 
 const SPRITE_WIDTH = 32
 const SPRITE_HEIGHT = 32
 const BG_SIZE = 32
-
-const frameCounts: Partial<Record<PetState, number>> = {
-  idle: 2,
-  moving: 9,
-  sleeping: 1,
-  eating: 9,
-}
-const frameSpeeds: Partial<Record<PetState, number>> = {
-  idle: 40,
-  moving: 5,
-  sleeping: 1,
-  eating: 3,
-}
-const frameRows: Partial<Record<PetState, number>> = {
-  idle: 0,
-  moving: 1,
-  sleeping: 2,
-  eating: 3,
-}
 
 export function usePetSprite({
   ctx,
@@ -45,13 +27,14 @@ export function usePetSprite({
   lockState?: PetState
 }) {
   const { frame } = useTick()
-  const animKey: PetState = lockState ? lockState : frameCounts[pet.state] ? pet.state : "idle"
+  const petAnim = animations[pet.sprite]
+  const anim = (lockState ? petAnim[lockState] : petAnim[pet.state]) ?? petAnim.idle
   const petAnimFrame = React.useMemo(
-    () => Math.floor(frame / frameSpeeds[animKey]) % frameCounts[animKey],
-    [frame, animKey]
+    () => Math.floor(frame / anim.frameSpeed) % anim.frameCount,
+    [frame, anim]
   )
   const bgAnimFrame = React.useMemo(
-    () => Math.floor(((frame / frameSpeeds.idle) * 2) % (width * 2)) - width,
+    () => Math.floor(((frame / petAnim.idle.frameSpeed) * 2) % (width * 2)) - width,
     [frame]
   )
 
@@ -75,7 +58,7 @@ export function usePetSprite({
         ctx.drawImage(
           pet.spriteImage,
           petAnimFrame * SPRITE_WIDTH,
-          frameRows[animKey] * SPRITE_WIDTH,
+          anim.frameRow * SPRITE_WIDTH,
           SPRITE_WIDTH,
           SPRITE_HEIGHT,
           padding,
@@ -85,7 +68,7 @@ export function usePetSprite({
         )
       }
     },
-    [petAnimFrame, bgAnimFrame, animKey]
+    [petAnimFrame, bgAnimFrame, anim]
   )
   useCanvas(ctx, draw, { width, height })
 }
