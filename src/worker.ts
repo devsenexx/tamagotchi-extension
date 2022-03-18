@@ -1,20 +1,18 @@
+import { getBedtimeDates } from "./lib/bedtime"
 import {
   MOVE_PERIOD,
-  MOVE_PERIOD_MINS,
   DOCUMENT_FRAME_SIZE,
   SAVE_PERIOD,
-  SAVE_PERIOD_MINS,
   TICK_TIMEOUT,
   TIMEOUT_IN_MINS,
   MOVE_DURATION,
 } from "./lib/consts"
-import PetData from "./lib/pet_data"
 import { getPet, savePet } from "./lib/pet_utils"
+import { isAfter, isBefore } from "date-fns"
 
 chrome.runtime.onInstalled.addListener(async () => {
   console.log("Extension installed!")
-  const pet = await getPet({ sync: true })
-  await savePet(pet)
+  chrome.storage.sync.set({ bedtimeStart: "22:00", bedtimeEnd: "08:00" })
 })
 
 chrome.alarms.create("tick", {
@@ -50,11 +48,16 @@ const handleAlarms = async (alarm: chrome.alarms.Alarm): Promise<void> => {
 
 async function tick() {
   const pet = await getPet()
-  const { popout } = await chrome.storage.local.get("popout")
+  const { popout, bedtimeStart, bedtimeEnd } = await chrome.storage.local.get([
+    "popout",
+    "bedtimeStart",
+    "bedtimeEnd",
+  ])
+
   timeToMove -= TICK_TIMEOUT
   timeToSave -= TICK_TIMEOUT
   timeToIdle -= TICK_TIMEOUT
-  console.log("tick", { timeToMove, timeToSave, timeToIdle, curPet: pet, popout })
+
   let moved = false
   let saved = false
 
@@ -66,6 +69,8 @@ async function tick() {
     return
   }
 
+  console.log("tick", { timeToMove, timeToSave, timeToIdle, curPet: pet, popout })
+
   const activeTabs = await chrome.tabs.query({
     active: true,
     discarded: false,
@@ -73,8 +78,17 @@ async function tick() {
   })
 
   // console.log("tabs", tabs)
+  const bedtime = getBedtimeDates(bedtimeStart, bedtimeEnd)
+  const now = new Date()
+  const isYesterdaysBedtime =
+    isAfter(now, bedtime.yesterday.start) && isBefore(now, bedtime.yesterday.end)
+  const isTodaysBedtime = isAfter(now, bedtime.today.start) && isBefore(now, bedtime.today.end)
 
-  pet.tick()
+  // if ((isYesterdaysBedtime || isTodaysBedtime) && ) {
+  //   pet.state = "sleeping"
+  // }
+
+  pet.tick(TICK_TIMEOUT)
 
   if (timeToMove <= 0 && popout) {
     if (pet.canMove) {

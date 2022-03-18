@@ -16,6 +16,13 @@ async function main() {
   if (popout) {
     doInject()
   }
+
+  setInterval(() => {
+    const frames = Array.from(document.querySelectorAll("#" + FRAME_ID))
+    if (frames.length > 1) {
+      frames.slice(0, -1).forEach((f) => document.body.removeChild(f))
+    }
+  }, 100)
 }
 
 function doInject() {

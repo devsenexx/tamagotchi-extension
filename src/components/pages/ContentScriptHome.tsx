@@ -101,9 +101,15 @@ export const ContentScriptHome: React.FC = () => {
           left: grabbing
             ? subtractPositions(mousePos, grabOffset).x + "px"
             : (pos.x * 100).toFixed(5) + "%",
-          transition: `transform 150ms ease-in-out, left ${
-            !freezeAnim && !grabbing ? MOVE_DURATION : 0
-          }ms cubic-bezier(0.52, 0.25, 0.79, 1.02)`,
+          transition: [
+            "transform 150ms ease-in-out",
+            `left ${
+              !freezeAnim && !grabbing ? MOVE_DURATION : 0
+            }ms cubic-bezier(0.52, 0.25, 0.79, 1.02)`,
+            `top ${
+              !freezeAnim && !grabbing ? MOVE_DURATION : 0
+            }ms cubic-bezier(0.52, 0.25, 0.79, 1.02)`,
+          ].join(", "),
           transform: grabbing ? "scale(1.05)" : "scale(1)",
           cursor: !grabbing ? "grab" : "grabbing",
         }}
@@ -161,8 +167,8 @@ export const ContentScriptHome: React.FC = () => {
             width: DROPPINGS_FRAME_SIZE,
             height: DROPPINGS_FRAME_SIZE,
             marginTop: 1,
-            top: 40,
-            left: (drop.x * 100).toFixed(2) + "%",
+            top: (drop.y * 100).toFixed(5) + "%",
+            left: (drop.x * 100).toFixed(5) + "%",
             zIndex: 999999999999,
             cursor: "pointer",
             "& > :last-child": {

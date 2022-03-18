@@ -33,6 +33,7 @@ export default class PetData {
   backgroundImage?: HTMLImageElement
   droppingImage?: HTMLImageElement
   position: Position
+  vars: Record<string, any>
 
   // objects such as droppings, toys, etc...
   objects: Record<"droppings", Array<Coords & { id: string }>> = {
@@ -50,6 +51,7 @@ export default class PetData {
     position,
     state,
     objects,
+    vars,
   }: {
     name: string
     sprite: string
@@ -58,6 +60,7 @@ export default class PetData {
     position?: Position
     state?: PetState
     objects?: Record<"droppings", Array<PetObject>>
+    vars?: Record<string, any>
   }) {
     this.name = name
     this.sprite = sprite
@@ -67,6 +70,7 @@ export default class PetData {
     this.stats = { ...fullStats(), ...stats }
     this.objects = { droppings: [], ...objects }
     this.state = state ?? "idle"
+    this.vars = { ...vars }
 
     this.initSprites()
   }
@@ -106,6 +110,7 @@ export default class PetData {
       state: this.state,
       position: this.position,
       objects: this.objects,
+      vars: this.vars,
     }
   }
 
@@ -135,7 +140,8 @@ export default class PetData {
     return `Pet(${this.name})`
   }
 
-  tick() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  tick(delta: number) {
     this.updateStats()
   }
 
@@ -189,9 +195,9 @@ export default class PetData {
   }
 
   async moveRandomly(frameSize: number) {
-    const { x, direction } = this.getRandomMovement()
+    const { x, y, direction } = this.getRandomMovement()
 
-    this.moveTo({ x: x, direction: direction })
+    this.moveTo({ x, y, direction: direction })
   }
 
   moveTo(newPosition: Partial<Position>) {
@@ -255,7 +261,7 @@ export default class PetData {
     this.state = "idle"
     this.createObject("droppings", {
       x: this.position.x,
-      y: 0,
+      y: this.position.y,
     })
   }
 
@@ -274,24 +280,38 @@ export default class PetData {
     this.objects[key] = this.objects[key].filter((i) => i.id !== id)
   }
 
-  getRandomMovement() {
-    const MOVE_MIN = 0.03
-    const MOVE_MAX = 0.06
-    const X_MIN = 0
-    const X_MAX = 0.98
-    const absMoveAmount = random(MOVE_MIN, MOVE_MAX, true)
+  getRandomMovement(): Position {
+    const MOVE_MIN_X = 0.03
+    const MOVE_MIN_Y = 0.001
+    const MOVE_MAX_XY = 0.06
+    const XY_MIN = 0
+    const XY_MAX = 0.98
+    const absMoveAmountX = random(MOVE_MIN_X, MOVE_MAX_XY, true)
+    const absMoveAmountY = random(MOVE_MIN_Y, MOVE_MAX_XY, true)
 
-    let actualMoveAmount = this.position.direction === "left" ? -absMoveAmount : absMoveAmount
+    let actualMoveAmountX = this.position.direction === "left" ? -absMoveAmountX : absMoveAmountX
+    let actualMoveAmountY = random(0, 1, true) < 0.5 ? -absMoveAmountY : absMoveAmountY
     let newDirection = this.position.direction
 
-    if (this.position.x + actualMoveAmount > X_MAX || this.position.x + actualMoveAmount < X_MIN) {
-      actualMoveAmount *= -1
+    if (
+      this.position.x + actualMoveAmountX > XY_MAX ||
+      this.position.x + actualMoveAmountX < XY_MIN
+    ) {
+      actualMoveAmountX *= -1
       newDirection = this.position.direction === "left" ? "right" : "left"
     }
 
-    const actualX = clamp(this.position.x + actualMoveAmount, X_MIN, X_MAX)
+    if (
+      this.position.x + actualMoveAmountY > XY_MAX ||
+      this.position.x + actualMoveAmountY < XY_MIN
+    ) {
+      actualMoveAmountY *= -1
+    }
 
-    return { x: actualX, direction: newDirection }
+    const actualX = clamp(this.position.x + actualMoveAmountX, XY_MIN, XY_MAX)
+    const actualY = clamp(this.position.y + actualMoveAmountY, XY_MIN, XY_MAX)
+
+    return { x: actualX, y: actualY, direction: newDirection }
   }
 }
 

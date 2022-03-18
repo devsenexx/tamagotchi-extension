@@ -1,7 +1,7 @@
 {
   "name": "PlayPet",
   "description": "Get your own virtual pet companion for your browser!",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "manifest_version": 3,
   "background": {
     "service_worker": "worker.js",
@@ -32,6 +32,7 @@
         "assets/images/**/*"
       ],
       "matches": [
+        "http://*/*",
         "https://*/*"
       ]
     }
